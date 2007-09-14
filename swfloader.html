@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<title>SWFLoader test</title>
+		<script language='javascript' type='text/javascript' src='/prototype.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='/swfloader.js'>&#160;</script>
+		<style>
+			div {
+				float: left;
+			}
+		</style>
+	</head>
+	<body>
+		<div id='testdiv1'></div>
+		<div id='testdiv2'></div>
+		<div id='testdiv3'></div>
+		<div id='testdiv4'></div>
+		<script language='javascript'>
+			swfloader.load("testdiv1", "testswf1", "test.swf", 200, 300, "#FFFFFF");
+			swfloader.load("testdiv2", "testswf2", "test.swf", 200, 300, "#FFFFFF");
+			swfloader.load("testdiv3", "testswf3", "test.swf", 200, 300, "#FFFFFF");
+			swfloader.load("testdiv4", "testswf4", "test.swf", 200, 300, "#FFFFFF");
+		</script>
+	</body>
+</html>
