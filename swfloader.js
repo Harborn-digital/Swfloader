@@ -1,17 +1,24 @@
 /**
  * SWFLoader is the javascript loader class for flash embedding
+ * Launches the expressinstall when the user doesn't have the required flash version installed
+ *
  * This class can also load a Javascript / Actionscript Connection (not yet)
  *
  * Changelog
  * ---------
  *
+ * Niels Nijens Mon Sep 17 2007
+ * -----------------------------
+ * - Added size check for the expressinstall
+ * - Added addAlternateContentCallback();
+ *
  * Niels Nijens Fri Sep 14 2007
  * -----------------------------
  * - Added workaround (onunload) for IE video streaming bug in Flash Player
+ * - Added default alternate content
  *
  * To do
  * ---------
- * - Add default alternate content
  * - Add Javascript / Flash Gateway code
  *
  * @since Thu Sep 13 2007
@@ -32,6 +39,7 @@ SWFLoader.prototype = {
 		this.swfobjects = {};
 		this.requiredVersion = {"major" : 9, "minor" : 0, "rev" : 28};
 		this.expressInstallVersion = {"major" : 6, "minor" : 0, "rev" : 65};
+		this.expressInstallSize = {"width" : 215, "height" : 138};
 		this.initUnload();
 	},
 	
@@ -56,10 +64,8 @@ SWFLoader.prototype = {
 		if (this.checkPlayerVersion() ) {
 			this.addSWF(element, swfname, swffile, width, height, bgcolor, wmode, swfvars);
 		}
-		else if (this.checkExpressInstallVersion() && !this.tester) {
-			document.title = document.title.slice(0, 47) + " - Flash Player Installation";
-			this.addSWF(element, swfname, "/lib/swfloader/expressinstall.swf", width, height, bgcolor, wmode, {"MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
-			this.tester = true;
+		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(width, height) ) {
+			this.addSWF(element, swfname, "/lib/swfloader/expressinstall.swf", width, height, bgcolor, wmode, {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
 		}
 		else {
 			this.addAlternateContent(element, width, height, bgcolor);
@@ -114,6 +120,23 @@ SWFLoader.prototype = {
 	checkExpressInstallVersion: function() {
 		installedVersion = this.getPlayerVersion();
 		if (this.getVersionInt(installedVersion) >= this.getVersionInt(this.expressInstallVersion) ) {
+			return true;
+		}
+		return false;
+	},
+	
+	/**
+	 * checkExpressInstallSize
+	 *
+	 * Returns true if width and height are equal or greater than the required size for the express install
+	 *
+	 * @since initial
+	 * @param integer width
+	 * @param integer height
+	 * @return boolean
+	 **/
+	checkExpressInstallSize: function(width, height) {
+		if (width >= this.expressInstallSize.width && height >= this.expressInstallSize.height) {
 			return true;
 		}
 		return false;
@@ -213,7 +236,7 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	addSWF: function(element, swfname, swffile, width, height, bgcolor, wmode, swfvars) {
-		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor, wmode, swfvars);
+		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace("/#/", ""), wmode, swfvars);
 		this.addSWFObject(element, swfobject);
 	},
 	
@@ -254,6 +277,19 @@ SWFLoader.prototype = {
 			return true;
 		}
 		return false;
+	},
+	
+	/**
+	 * addAlternateContentCallback
+	 *
+	 * Callback function for when the autoupdate fails or has been canceled by the user
+	 *
+	 * @since Mon Sep 17 2007
+	 * @param object swf
+	 * @return void
+	 **/
+	addAlternateContentCallback: function(element, width, height) {
+		this.addAlternateContent(element, width, height);
 	},
 	
 	/**
@@ -511,7 +547,7 @@ SWFObject.prototype = {
 	 * @since initial
 	 * @return object
 	 **/
-	getVariables: function(){
+	getVariables: function() {
 		return this.variables;
 	},
 	
