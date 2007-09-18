@@ -502,7 +502,7 @@ SWFObject.prototype = {
 			return false;
 		}
 		return bgcolor;
-	}
+	},
 	
 	/**
 	 * setAttribute
