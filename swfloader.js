@@ -55,17 +55,17 @@ SWFLoader.prototype = {
 	 * @param string swffile
 	 * @param integer width
 	 * @param integer height
-	 * @param string bgcolor
+	 * @param string bgcolor -- transparent also works
 	 * @param boolean wmode
 	 * @param object swfvars
 	 * @return void
 	 **/
-	load: function(element, swfname, swffile, width, height, bgcolor, wmode, swfvars) {
+	load: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
 		if (this.checkPlayerVersion() ) {
-			this.addSWF(element, swfname, swffile, width, height, bgcolor, wmode, swfvars);
+			this.addSWF(element, swfname, swffile, width, height, bgcolor, swfvars);
 		}
 		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(width, height) ) {
-			this.addSWF(element, swfname, "/lib/swfloader/expressinstall.swf", width, height, bgcolor, wmode, {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
+			this.addSWF(element, swfname, "/lib/swfloader/expressinstall.swf", width, height, bgcolor, {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
 		}
 		else {
 			this.addAlternateContent(element, width, height, bgcolor);
@@ -235,8 +235,8 @@ SWFLoader.prototype = {
 	 * @param object swfvars
 	 * @return void
 	 **/
-	addSWF: function(element, swfname, swffile, width, height, bgcolor, wmode, swfvars) {
-		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace("/#/", ""), wmode, swfvars);
+	addSWF: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
+		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace("/#/", ""), swfvars);
 		this.addSWFObject(element, swfobject);
 	},
 	
@@ -381,9 +381,9 @@ SWFLoader.prototype = {
  * Changelog
  * ---------
  *
- * Niels Nijens Thu Sep 13 2007
+ * Niels Nijens Tue Sep 18 2007
  * -----------------------------
- * - 
+ * - Added getColor and getWmode to combine them into one variable bgcolor
  *
  * @since Thu Sep 13 2007
  * @author Niels Nijens (niels@connectholland.nl)
@@ -406,9 +406,9 @@ SWFObject.prototype = {
 	 * @param object swfvars
 	 * @return void
 	 **/
-	initialize: function(swfname, swffile, width, height, bgcolor, wmode, swfvars) {
+	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
 		this.initAttributes({"swffile" : swffile, "swfname" : swfname, "width" : width, "height" : height});
-		this.initParams({"quality" : "high", "menu" : "false", "AllowScriptAccess" : "always", "bgcolor" : bgcolor, "wmode" : wmode});
+		this.initParams({"quality" : "high", "menu" : "false", "AllowScriptAccess" : "always", "bgcolor" : this.getColor(bgcolor), "wmode" : this.getWMode(bgcolor)});
 		this.initVariables(swfvars);
 	},
 	
@@ -471,6 +471,38 @@ SWFObject.prototype = {
 			}
 		}
 	},
+	
+	/**
+	 * getColor
+	 *
+	 * Returns the bgcolor
+	 *
+	 * @since Tue Sep 18 2007
+	 * @param string bgcolor
+	 * @return mixed
+	 **/
+	getColor: function(bgcolor) {
+		if (bgcolor == "transparent") {
+			return false;
+		}
+		return bgcolor;
+	},
+	
+	/**
+	 * getWMode
+	 *
+	 * Returns the wmode
+	 *
+	 * @since Tue Sep 18 2007
+	 * @param string bgcolor
+	 * @return mixed
+	 **/
+	getWMode: function(bgcolor) {
+		if (bgcolor != "transparent") {
+			return false;
+		}
+		return bgcolor;
+	}
 	
 	/**
 	 * setAttribute
