@@ -18,6 +18,8 @@
  * @package windmill.config
  **/
 package windmill.config {
+	import flash.display.Loader;
+    import flash.display.LoaderInfo;
 	import flash.display.Sprite;
 	import flash.events.*;
 	import flash.net.*;
@@ -72,11 +74,12 @@ package windmill.config {
 		 *
 		 * @since initial
 		 * @access public
+		 * @param Object flashVars
 		 * @return WMFlashConfig
 		 **/
-		public function WMFlashConfig() {
-			this.swfname = LoaderInfo.parameters.swfname;
-			this.swfpath = LoaderInfo.parameters.swfpath;
+		public function WMFlashConfig(flashVars:Object) {
+			this.swfname = flashVars.swfname;
+			this.swfpath = flashVars.swfpath;
 		}
 		
 		/**

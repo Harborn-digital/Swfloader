@@ -7,6 +7,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens Fri Sep 21 2007
+ * -----------------------------
+ * - Added addFlashConfigVars(); for WMFlashConfig
+ *
  * Niels Nijens Mon Sep 17 2007
  * -----------------------------
  * - Added size check for the expressinstall
@@ -20,6 +24,7 @@
  * To do
  * ---------
  * - Add Javascript / Flash Gateway code
+ * - Add Error handler to handle errors from within Flash
  *
  * @since Thu Sep 13 2007
  * @author Niels Nijens (niels@connectholland.nl)
@@ -289,6 +294,7 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	addAlternateContentCallback: function(element, width, height) {
+		console.log("test");
 		this.addAlternateContent(element, width, height);
 	},
 	
@@ -410,6 +416,7 @@ SWFObject.prototype = {
 		this.initAttributes({"swffile" : swffile, "swfname" : swfname, "width" : width, "height" : height});
 		this.initParams({"quality" : "high", "menu" : "false", "AllowScriptAccess" : "always", "bgcolor" : this.getColor(bgcolor), "wmode" : this.getWMode(bgcolor)});
 		this.initVariables(swfvars);
+		this.addFlashConfigVars();
 	},
 	
 	/**
@@ -470,6 +477,19 @@ SWFObject.prototype = {
 				this.addVariable(property, variables[property]);
 			}
 		}
+	},
+	
+	/**
+	 * addFlashConfigVars
+	 *
+	 * Adds the variables required for WMFlashConfig
+	 *
+	 * @since Fri Sep 21 2007
+	 * @return void
+	 **/
+	addFlashConfigVars: function() {
+		this.addVariable("swfname", this.getAttribute("swffile").substr(this.getAttribute("swffile").lastIndexOf("/") + 1, this.getAttribute("swffile").length - (this.getAttribute("swffile").lastIndexOf("/") + 5) ) );
+		this.addVariable("swfpath", this.getAttribute("swffile").substr(0, this.getAttribute("swffile").lastIndexOf("/") + 1) );
 	},
 	
 	/**
