@@ -33,6 +33,7 @@ package windmill.config {
 		 * The name of the SWF
 		 * 
 		 * @since initial
+		 * @access protected
 		 * @var String
 		 **/
 		protected var swfname:String;
@@ -43,6 +44,7 @@ package windmill.config {
 		 * The path to the SWF location
 		 * 
 		 * @since initial
+		 * @access protected
 		 * @var String
 		 **/
 		protected var swfpath:String;
@@ -53,6 +55,7 @@ package windmill.config {
 		 * The loader that loads the XML
 		 * 
 		 * @since initial
+		 * @access protected
 		 * @var URLLoader
 		 **/
 		protected var XMLloader:URLLoader;
@@ -63,6 +66,7 @@ package windmill.config {
 		 * The XML document
 		 * 
 		 * @since initial
+		 * @access protected
 		 * @var XML
 		 **/
 		protected var xml:XML;
