@@ -382,7 +382,6 @@ SWFLoader.prototype = {
 
 /**
  * SWFObject
- * 
  *
  * Changelog
  * ---------
