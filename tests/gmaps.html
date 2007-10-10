@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<title>Google Maps Test</title>
+		<script language='javascript' type='text/javascript' src='/lib/prototype/prototype.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='/lib/prototype/inheritance.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='/lib/prototype/ajaxengine.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='/lib/swfloader/swfloader.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='/var/javascript/GMapsObject.js'>&#160;</script>
+		<script language='javascript' type='text/javascript'>
+			function init() {
+				flashMovie = document.getElementById("gmap2");
+			}
+			
+			function addPoint() {
+				if (flashMovie) {
+					flashMovie.addPoint("");
+				}
+			}
+			
+			window.onload = init;
+		</script>
+	</head>
+	<body>
+		<div id='gmaps'></div>
+		<script language='javascript' type='text/javascript'>
+			gmapobject = new GMapsObject("gmap1", "/lib/swfloader/googlemap.swf", 400, 500, "transparent");
+			swfloader.loadSWFObject("gmaps", gmapobject);
+		</script>
+		<br/>
+		Search:<br/>
+		<input type='text' id='search' name='search'/><br/>
+		<input type='button' value='Zoek op kaart' onclick='gmapobject.searchGeoCode(this, $("search") );'/><br/>
+		<input type='button' value='Placemark test' onclick='gmapobject.addPoint("search", {lat: 51.909052, lng: 4.680007, name:"Add point test"});'/>
+	</body>
+</html>
