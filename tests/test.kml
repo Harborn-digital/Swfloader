@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+	<Document>
+		<name>License to Test</name>
+		<open>1</open>
+		<description>Ideas</description>
+		<Style id="ideaBulb">
+			<IconStyle>
+				<Icon>
+					<href>/images/googlelamp.png</href>
+				</Icon>
+			</IconStyle>
+		</Style>
+		<Folder>
+			<Placemark>
+				<name>Test</name>
+				<description>Test</description>
+				<styleUrl>#ideaBulb</styleUrl>
+				<Point>
+					<coordinates>4.480007,51.909052</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Test</name>
+				<description>Test</description>
+				<styleUrl>#ideaBulb</styleUrl>
+				<Point>
+					<coordinates>5.480007,51.909052</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>Test</name>
+				<description>Test</description>
+				<styleUrl>#ideaBulb</styleUrl>
+				<Point>
+					<coordinates>4.480007,51.509052</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+	</Document>
+</kml>

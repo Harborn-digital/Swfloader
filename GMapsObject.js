@@ -31,9 +31,23 @@ var GMapsObject = Class.extend(SWFObject, {
 	 **/
 	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
 		this.__parent.initialize(swfname, swffile, width, height, bgcolor, swfvars);
+		this.mapLoaded = false;
 		
 		ajaxEngine.registerRequest(swfname, "/index.php");
 		ajaxEngine.registerAjaxObject(swfname, this);
+	},
+	
+	/**
+	 * addFlashConfigVars
+	 *
+	 * Adds the variables required for WMFlashConfig
+	 *
+	 * @since Thu Oct 11 2007
+	 * @return void
+	 **/
+	addFlashConfigVars: function() {
+		this.addVariable("swfname", this.getAttribute("swfname") );
+		this.addVariable("swfpath", this.getAttribute("swffile").substr(0, this.getAttribute("swffile").lastIndexOf("/") + 1) );
 	},
 	
 	
@@ -103,13 +117,25 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 	
 	
+	mapLoaded: function() {
+		console.log("mapLoaded");
+		this.mapLoaded = true;
+	},
+	
+	
 	setCenter: function(location, zoom) {
 		$(this.getAttribute("swfname") ).setCenter(location, zoom);
 	},
 	
 	
 	loadKML: function(id, url) {
-		$(this.getAttribute("swfname") ).loadKML(id, url);
+		element = $(this.getAttribute("swfname") );
+		if (element["loadKML"] != undefined) {
+			$(this.getAttribute("swfname") ).loadKML(id, url);
+		}
+		else {
+			this.loadKML.applyWithTimeout(this, 2000, id, url);
+		}
 	},
 	
 	

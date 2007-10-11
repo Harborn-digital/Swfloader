@@ -28,7 +28,15 @@ import flash.external.*;
  * @package windmill.net
  **/
 class windmill.net.WMGoogleMap {
-		
+	
+	/**
+	 * The variables imported from Javascript
+	 *
+	 * @since Thu Oct 11 2007
+	 * @var Object
+	 **/
+	var flashVars:Object;
+	
 	/**
 	 * The Google map container
 	 *
@@ -54,16 +62,8 @@ class windmill.net.WMGoogleMap {
 	 * @return WMGoogleMap
 	 **/
 	function WMGoogleMap() {
-		System.security.allowDomain("afcomponents.com");
-		System.security.allowDomain("google.com");
-		
-		this.gMap = _root.attachMovie("GMap", "GoogleMap", _root.getNextHighestDepth() );
-		this.gMap.addEventListener("MAP_POSITION_CHANGED", function(event) {
-																var layers = this.gMap.getLayers();
-																for (var i=0; i < layers.length; i++) {
-																	layers[i].updatePosition();
-																}
-															} );
+		this.initSecurity();
+		this.initMap();
 		
 		this.KMLLayer = new Object();
 		
@@ -71,6 +71,28 @@ class windmill.net.WMGoogleMap {
 		this.initAPI();
 		this.initCenter();
 		this.addControlsAndSettings();
+	}
+	
+	function initSecurity() {
+		System.security.allowDomain("afcomponents.com");
+		System.security.allowDomain("google.com");
+	}
+	
+	function initMap() {
+		this.gMap = _root.attachMovie("GMap", "GoogleMap", _root.getNextHighestDepth() );
+		this.gMap.addEventListener("MAP_LOAD_COMPLETE", loadHandler);
+		this.gMap.addEventListener("MAP_POSITION_CHANGED", mapPositionHandler);
+	}
+	
+	function loadHandler(event) {
+		ExternalInterface.call("SWFCall", _root.swfname, "mapLoaded");
+	}
+	
+	function mapPositionHandler(event) {
+		var layers = this.gMap.getLayers();
+		for (var i=0; i < layers.length; i++) {
+			layers[i].updatePosition();
+		}
 	}
 	
 	/**
@@ -102,6 +124,9 @@ class windmill.net.WMGoogleMap {
 			ExternalInterface.addCallback("loadKML", this, this.loadKML);
 			ExternalInterface.addCallback("removeLayer", this, this.removeLayer);
 			ExternalInterface.addCallback("addPoint", this, this.addPoint);
+			
+			// ADD Loaded call
+			//ExternalInterface.call("SWFCall", _root.swfname, "mapLoaded");
 		}
 	}
 	
@@ -137,6 +162,7 @@ class windmill.net.WMGoogleMap {
 		this.gMap.animateZoom = true;
 		this.gMap.addControl(this.gMap.GZoomControl({display: "compact"}) );
 		this.gMap.addControl(this.gMap.GPositionControl() );
+		this.gMap.addControl(this.gMap.GNavigatorControl() );
 	}
 	
 	/**

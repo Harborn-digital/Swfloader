@@ -45,6 +45,7 @@ SWFLoader.prototype = {
 		this.requiredVersion = {"major" : 9, "minor" : 0, "rev" : 28};
 		this.expressInstallVersion = {"major" : 6, "minor" : 0, "rev" : 65};
 		this.expressInstallSize = {"width" : 215, "height" : 138};
+		window.SWFCall = this.SWFCall.bind(this);
 		this.initUnload();
 	},
 	
@@ -337,6 +338,47 @@ SWFLoader.prototype = {
 	},
 	
 	/**
+	 * SWFCall
+	 *
+	 * Javascript interface for calls from SWFs
+	 *
+	 * @since Thu Oct 11 2007
+	 * @return mixed
+	 **/
+	SWFCall: function() {
+		flashVars = arguments;
+		
+		swfname = flashVars[0];
+		methodName = flashVars[1];
+		
+		swfobject = this.getSWFObjectByName(swfname);
+		if (swfobject) {
+			if (swfobject[methodName] != undefined) {
+				return swfobject[methodName]();
+			}
+			else {
+				this.SWFError("Method " + methodName + " doesn't exist in object " + swfname);
+			}
+		}
+	},
+	
+	/**
+	 * SWFError
+	 *
+	 * Prints an error in the console
+	 * For developers only
+	 *
+	 * @since Thu Oct 11 2007
+	 * @param string message
+	 * @return void
+	 **/
+	SWFError: function(message) {
+		if (console) {
+			console.error("ERROR: " + message);
+		}
+	},
+	
+	/**
 	 * initUnload
 	 *
 	 * Adds an onunload event to the document
@@ -413,7 +455,7 @@ SWFObject.prototype = {
 	 **/
 	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
 		this.initAttributes({"swffile" : swffile, "swfname" : swfname, "width" : width, "height" : height});
-		this.initParams({"quality" : "high", "menu" : "false", "AllowScriptAccess" : "always", "bgcolor" : this.getColor(bgcolor), "wmode" : this.getWMode(bgcolor)});
+		this.initParams({"quality" : "high", "menu" : "false", "scale" : "noscale", "AllowScriptAccess" : "always", "bgcolor" : this.getColor(bgcolor), "wmode" : this.getWMode(bgcolor)});
 		this.initVariables(swfvars);
 		this.addFlashConfigVars();
 	},
