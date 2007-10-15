@@ -7,6 +7,11 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens Mon Oct 15 2007
+ * -----------------------------
+ * - Made SWFError(); able to call from Flash
+ * - Added arguments to function calls from Flash (thanks to Giso)
+ *
  * Niels Nijens Fri Sep 21 2007
  * -----------------------------
  * - Added addFlashConfigVars(); for WMFlashConfig
@@ -23,8 +28,7 @@
  *
  * To do
  * ---------
- * - Add Javascript / Flash Gateway code
- * - Add Error handler to handle errors from within Flash
+ * - 
  *
  * @since Thu Sep 13 2007
  * @author Niels Nijens (niels@connectholland.nl)
@@ -46,6 +50,7 @@ SWFLoader.prototype = {
 		this.expressInstallVersion = {"major" : 6, "minor" : 0, "rev" : 65};
 		this.expressInstallSize = {"width" : 215, "height" : 138};
 		window.SWFCall = this.SWFCall.bind(this);
+		window.SWFError = this.SWFError.bind(this);
 		this.initUnload();
 	},
 	
@@ -346,19 +351,23 @@ SWFLoader.prototype = {
 	 * @return mixed
 	 **/
 	SWFCall: function() {
-		flashVars = arguments;
+		flashVars = $A(arguments);
 		
-		swfname = flashVars[0];
-		methodName = flashVars[1];
+		swfname = flashVars.shift();
+		methodName = flashVars.shift();
+		methodVars = flashVars;
 		
 		swfobject = this.getSWFObjectByName(swfname);
 		if (swfobject) {
-			if (swfobject[methodName] != undefined) {
-				return swfobject[methodName]();
+			if (typeof(swfobject[methodName]) == "function") {
+				return swfobject[methodName].apply(swfobject, methodVars);
 			}
 			else {
-				this.SWFError("Method " + methodName + " doesn't exist in object " + swfname);
+				this.SWFError("Method " + methodName + " doesn't exist in object " + swfname + ".");
 			}
+		}
+		else {
+			this.SWFError("Object with name " + swfname + " doesn't exist.");
 		}
 	},
 	
@@ -370,11 +379,17 @@ SWFLoader.prototype = {
 	 *
 	 * @since Thu Oct 11 2007
 	 * @param string message
+	 * @param boolean log
 	 * @return void
 	 **/
-	SWFError: function(message) {
+	SWFError: function(message, log) {
 		if (console) {
-			console.error("ERROR: " + message);
+			if (log) {
+				console.log(message);
+			}
+			else {
+				console.error("ERROR: " + message);
+			}
 		}
 	},
 	

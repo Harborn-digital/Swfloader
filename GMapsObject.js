@@ -64,10 +64,10 @@ var GMapsObject = Class.extend(SWFObject, {
 	
 	
 	ajaxUpdate: function(response) {
-		xml = response.firstChild;
+		this.xml = response.firstChild;
 		switch (xml.getAttribute("mode") ) {
 			case "geocode":
-				this.geoCodeRequest(xml);
+				this.geoCodeRequest();
 				break;
 		}
 	},
@@ -93,8 +93,16 @@ var GMapsObject = Class.extend(SWFObject, {
 			coordinates = coordinates.split(",");
 			
 			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : this.getNodeValue(placemarks[i].getElementsByTagName("street")[0]) + ", " + this.getNodeValue(placemarks[i].getElementsByTagName("city")[0])};
-			this.addPoint("search", point);
+			this.addPoint("search", point, "select");
 		}
+	},
+	
+	getPlacemarks: function() {
+		return this.xml.getElementsByTagName("placemark");
+	},
+	
+	getPlacemarkByCoords: function(coords) {
+		
 	},
 	
 	/**
@@ -117,12 +125,6 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 	
 	
-	mapLoaded: function() {
-		console.log("mapLoaded");
-		this.mapLoaded = true;
-	},
-	
-	
 	setCenter: function(location, zoom) {
 		$(this.getAttribute("swfname") ).setCenter(location, zoom);
 	},
@@ -134,7 +136,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).loadKML(id, url);
 		}
 		else {
-			this.loadKML.applyWithTimeout(this, 2000, id, url);
+			this.loadKML.applyWithTimeout(this, 100, id, url);
 		}
 	},
 	
@@ -143,8 +145,38 @@ var GMapsObject = Class.extend(SWFObject, {
 		$(this.getAttribute("swfname") ).removeLayer(id);
 	},
 	
+	/**
+	 * setPointStyle
+	 *
+	 * Sets the style used for points
+	 * Example: {"icon" : "icon.png", iconActive: "iconactive.png"}
+	 *
+	 * @since Mon Oct 15 2007
+	 * @access public
+	 * @param object style
+	 * @return void
+	 **/
+	setPointStyle: function(style) {
+		element = $(this.getAttribute("swfname") );
+		if (element["setPointStyle"] != undefined) {
+			$(this.getAttribute("swfname") ).setPointStyle(style);
+		}
+		else {
+			this.setPointStyle.applyWithTimeout(this, 100, style);
+		}
+	},
 	
-	addPoint: function(id, point) {
-		$(this.getAttribute("swfname") ).addPoint(id, point);
+	
+	addPoint: function(id, point, mode) {
+		$(this.getAttribute("swfname") ).addPoint(id, point, mode);
+	},
+	
+	addPointToForm: function(point) {
+		
+		this.xml.getElementsByTagName("placemark");
+		
+		
+		console.log("addPointToForm");
+		console.log(point);
 	}
 });

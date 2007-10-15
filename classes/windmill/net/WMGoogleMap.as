@@ -11,6 +11,18 @@ import flash.external.*;
  * Changelog
  * ---------
  * 
+ * Niels Nijens - Mon Oct 15 2007
+ * ----------------------------------
+ * - Added comments
+ * - Added load handlers
+ * - Fixed showLayer(); and hideLayer();
+ * 
+ * Niels Nijens - Fri Oct 12 2007
+ * ----------------------------------
+ * - Fixed KML loading
+ * - refactored some functions
+ * - Added load init Event for Javascript
+ * 
  * Niels Nijens - Mon Oct 08 2007
  * ----------------------------------
  * - Added KML loading
@@ -54,6 +66,22 @@ class windmill.net.WMGoogleMap {
 	var KMLLayer:Object;
 	
 	/**
+	 * Reference to the loading message
+	 *
+	 * @since Mon Oct 15 2007
+	 * @var MovieClip
+	 **/
+	var loadFeedback:MovieClip;
+	
+	/**
+	 * Object with style information for points
+	 *
+	 * @since Mon Oct 15 2007
+	 * @var Object
+	 **/
+	var pointStyle:Object;
+	
+	/**
 	 * WMGoogleMap
 	 *
 	 * Creates a new instance of WMGoogleMap
@@ -73,21 +101,42 @@ class windmill.net.WMGoogleMap {
 		this.addControlsAndSettings();
 	}
 	
+	/**
+	 * initSecurity
+	 *
+	 * Add domains to the security sandbox
+	 *
+	 * @since Fri Oct 12 2007
+	 * @return void
+	 **/
 	function initSecurity() {
 		System.security.allowDomain("afcomponents.com");
 		System.security.allowDomain("google.com");
 	}
 	
+	/**
+	 * initMap
+	 *
+	 * Create an instance of the Google Maps Component
+	 * Add event handlers
+	 *
+	 * @since Fri Oct 12 2007
+	 * @return void
+	 **/
 	function initMap() {
 		this.gMap = _root.attachMovie("GMap", "GoogleMap", _root.getNextHighestDepth() );
-		this.gMap.addEventListener("MAP_LOAD_COMPLETE", loadHandler);
-		this.gMap.addEventListener("MAP_POSITION_CHANGED", mapPositionHandler);
+		this.gMap.addEventListener("MAP_POSITION_CHANGED", this.mapPositionHandler);
 	}
 	
-	function loadHandler(event) {
-		ExternalInterface.call("SWFCall", _root.swfname, "mapLoaded");
-	}
-	
+	/**
+	 * mapPositionHandler
+	 *
+	 * Updates layers after MAP_POSITION_CHANGED
+	 *
+	 * @since Fri Oct 12 2007
+	 * @param Object event
+	 * @return void
+	 **/
 	function mapPositionHandler(event) {
 		var layers = this.gMap.getLayers();
 		for (var i=0; i < layers.length; i++) {
@@ -123,10 +172,8 @@ class windmill.net.WMGoogleMap {
 			ExternalInterface.addCallback("setCenter", this, this.setCenter);
 			ExternalInterface.addCallback("loadKML", this, this.loadKML);
 			ExternalInterface.addCallback("removeLayer", this, this.removeLayer);
+			ExternalInterface.addCallback("setPointStyle", this, this.setPointStyle);
 			ExternalInterface.addCallback("addPoint", this, this.addPoint);
-			
-			// ADD Loaded call
-			//ExternalInterface.call("SWFCall", _root.swfname, "mapLoaded");
 		}
 	}
 	
@@ -162,7 +209,6 @@ class windmill.net.WMGoogleMap {
 		this.gMap.animateZoom = true;
 		this.gMap.addControl(this.gMap.GZoomControl({display: "compact"}) );
 		this.gMap.addControl(this.gMap.GPositionControl() );
-		this.gMap.addControl(this.gMap.GNavigatorControl() );
 	}
 	
 	/**
@@ -199,11 +245,50 @@ class windmill.net.WMGoogleMap {
 	 * @since Mon Oct 08 2007
 	 * @param String id
 	 * @param String url
+	 * @param String message
 	 * @return void
 	 **/
-	function loadKML(id, url) {
-		this.KMLLayer[id] = gMap.addKMLLayer({path: url});
-		this.KMLLayer[id].show();
+	function loadKML(id, url, message) {
+		this.loadEvent(message);
+		var layer = this.gMap.addKMLLayer({path: url});
+		layer.addEventListener("KML_LOAD_COMPLETE", this.loadKMLHandler);
+		layer.show();
+		
+		this.KMLLayer[id] = layer.id;
+	}
+	
+	/**
+	 * loadEvent
+	 *
+	 * Adds a loading message
+	 *
+	 * @since Mon Oct 15 2007
+	 * @param String message
+	 * @return void
+	 **/
+	function loadEvent(message) {
+		if (!this.loadFeedback) {
+			this.loadFeedback = _root.attachMovie("loading", "loadFeedback", _root.getNextHighestDepth() );
+			this.loadFeedback._x = Stage.width / 2;
+			this.loadFeedback._y = Stage.height / 2;
+		}
+		if (message != "" && message != undefined) {
+			this.loadFeedback.message.text = message;
+		}
+		this.loadFeedback._visible = true;
+	}
+	
+	/**
+	 * loadKMLHandler
+	 *
+	 * Removes the loading feedback after KML_LOAD_COMPLETE
+	 *
+	 * @since Mon Oct 08 2007
+	 * @param Object event
+	 * @return void
+	 **/
+	function loadKMLHandler(event) {
+		_root.loadFeedback._visible = false;
 	}
 	
 	/**
@@ -216,8 +301,9 @@ class windmill.net.WMGoogleMap {
 	 * @return void
 	 **/
 	function showLayer(id) {
-		if (this.KMLLayer[id] != undefined) {
-			this.KMLLayer[id].show();
+		var layer = this.getLayer(id);
+		if (layer) {
+			layer.show();
 		}
 	}
 	
@@ -231,8 +317,9 @@ class windmill.net.WMGoogleMap {
 	 * @return void
 	 **/
 	function hideLayer(id) {
-		if (this.KMLLayer[id] != undefined) {
-			this.KMLLayer[id].hide();
+		var layer = this.getLayer(id);
+		if (layer) {
+			layer.hide();
 		}
 	}
 	
@@ -247,7 +334,7 @@ class windmill.net.WMGoogleMap {
 	 **/
 	function removeLayer(id) {
 		var layer = this.getLayer(id);
-		if (layer != undefined) {
+		if (layer) {
 			layer.clear();
 		}
 	}
@@ -281,18 +368,109 @@ class windmill.net.WMGoogleMap {
 	 * @since Mon Oct 08 2007
 	 * @param String id
 	 * @param Object point
-	 * @return void
+	 * @return Boolean
 	 **/
-	function addPoint(id, point) {
+	function addPoint(id, point, mode) {
 		var layer = this.getLayer(id);
 		if (!layer) {
 			layer = this.gMap.addLayer({name: id});
 			this.KMLLayer[id] = layer.id;
 		}
 		
+		point.icon = this.pointStyle.icon;
+		point.iconAlign = "bottom-center";
+		
 		var point = layer.addPoint(point);
-		point.addEventListener("GEOMETRY_ON_RELEASE", this.showPointWindow);
+		point.attributes["layer"] = id;
+		point.attributes["reference"] = this;
+		point.attributes["style"] = this.pointStyle;
+		
+		this.addPointEvents(point, mode);
+		
 		return true;
+	}
+	
+	/**
+	 * addPointEvents
+	 *
+	 * Adds the events for mode to point
+	 *
+	 * @since Mon Oct 15 2007
+	 * @param Object point
+	 * @param String mode
+	 * @return void
+	 **/
+	function addPointEvents(point, mode) {
+		switch (mode) {
+			case "select":
+				point.addEventListener("GEOMETRY_ON_RELEASE", this.showSelect);
+				break;
+			default:
+				point.addEventListener("GEOMETRY_ON_RELEASE", this.showPointWindow);
+				break;
+		}
+	}
+	
+	/**
+	 * showSelect
+	 *
+	 * Selects the clicked point
+	 *
+	 * @since Mon Oct 15 2007
+	 * @param Object event
+	 * @return void
+	 **/
+	function showSelect(event) {
+		event.target.attributes["reference"].hideSelect(event);
+		event.target.icon = event.target.attributes["style"].iconActive;
+		event.target.attributes["reference"].showPointWindow(event);
+		
+		var point = new Array(event.target.name, event.target.lat, event.target.lng);
+		ExternalInterface.call("SWFCall", _root.swfname, "addPointToForm", point);
+	}
+	
+	/**
+	 * hideSelect
+	 *
+	 * Removes all current selected points in a layer
+	 *
+	 * @since Mon Oct 15 2007
+	 * @param Object event
+	 * @return void
+	 **/
+	function hideSelect(event) {
+		var layer = event.target.attributes["reference"].getLayer(event.target.attributes["layer"]);
+		var points = layer.getGeometryObjects();
+		for (var i = 0; i < points.length; i++) {
+			if (points[i].icon != event.target.attributes["style"].icon) {
+				points[i].icon = event.target.attributes["style"].icon;
+			}
+		}
+	}
+	
+	/**
+	 * setPointStyle
+	 *
+	 * Sets the style object for points
+	 *
+	 * @since Mon Oct 15 2007
+	 * @param Object style
+	 * @return void
+	 **/
+	function setPointStyle(style) {
+		this.pointStyle = style;
+	}
+	
+	/**
+	 * getPointStyle
+	 *
+	 * Returns the style object for points
+	 *
+	 * @since Mon Oct 15 2007
+	 * @return Object
+	 **/
+	function getPointStyle() {
+		return this.pointStyle;
 	}
 	
 	/**
@@ -301,7 +479,7 @@ class windmill.net.WMGoogleMap {
 	 * Shows the info window when a point is clicked
 	 *
 	 * @since Mon Oct 08 2007
-	 * @param Event event
+	 * @param Object event
 	 * @return void
 	 **/
 	function showPointWindow(event) {
