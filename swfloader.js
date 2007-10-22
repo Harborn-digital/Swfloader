@@ -7,6 +7,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens Mon Oct 22 2007
+ * -----------------------------
+ * - Made load() and loadSWFObject() the same, loadSWFObject() missed the expressinstall functionality
+ *
  * Niels Nijens Mon Oct 15 2007
  * -----------------------------
  * - Made SWFError(); able to call from Flash
@@ -72,15 +76,8 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	load: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
-		if (this.checkPlayerVersion() ) {
-			this.addSWF(element, swfname, swffile, width, height, bgcolor, swfvars);
-		}
-		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(width, height) ) {
-			this.addSWF(element, swfname, "/lib/swfloader/expressinstall.swf", width, height, bgcolor, {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
-		}
-		else {
-			this.addAlternateContent(element, width, height, bgcolor);
-		}
+		swfobject = this.getSWFObject(element, swfname, swffile, width, height, bgcolor, swfvars);
+		this.loadSWFObject(swfobject);
 	},
 
 	/**
@@ -96,14 +93,20 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	loadSWFObject: function(element, swfobject) {
+		swfName = swfobject.getAttribute("swfname");
+		swfWidth = swfobject.getAttribute("width");
+		swfHeight = swfobject.getAttribute("height");
+		swfBgcolor = swfobject.getAttribute("bgcolor");
+		
 		if (this.checkPlayerVersion() ) {
 			this.addSWFObject(element, swfobject);
 		}
-		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(swfobject.getAttribute("width"), swfobject.getAttribute("height")) ) {
-			this.addSWF(element, swfname, "/lib/swfloader/expressinstall.swf", swfobject.getAttribute("width"), swfobject.getAttribute("height"), swfobject.getAttribute("bgcolor"), {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
+		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(swfWidth, swfHeight) ) {
+			installObject = this.getSWFObject(element, swfName, "/lib/swfloader/expressinstall.swf", swfWidth, swfHeight, swfBgcolor, {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
+			this.addSWFObject(element, installObject);
 		}
 		else {
-			this.addAlternateContent(element, swfobject.getAttribute("width"), swfobject.getAttribute("height"), swfobject.getAttribute("bgcolor"));
+			this.addAlternateContent(element, swfWidth, swfHeight, swfBgcolor);
 		}
 	},
 
@@ -234,11 +237,11 @@ SWFLoader.prototype = {
 	},
 
 	/**
-	 * addSWF
+	 * getSWFObject
 	 *
 	 * Adds a SWF to the swfobjects list and writes the SWFObject to the document
 	 *
-	 * @since initial
+	 * @since Mon Oct 22 2007 (previously known as addSWF() )
 	 * @param string element
 	 * @param string swfname
 	 * @param string swffile
@@ -247,11 +250,11 @@ SWFLoader.prototype = {
 	 * @param string bgcolor
 	 * @param boolean wmode
 	 * @param object swfvars
-	 * @return void
+	 * @return SWFObject
 	 **/
-	addSWF: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
+	getSWFObject: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
 		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace("/#/", ""), swfvars);
-		this.addSWFObject(element, swfobject);
+		return swfobject;
 	},
 
 	/**
