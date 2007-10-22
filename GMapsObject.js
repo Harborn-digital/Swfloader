@@ -126,7 +126,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	
 	setCenter: function(location, zoom) {
 		element = $(this.getAttribute("swfname") );
-		if (typeof(element["loadKML"]) == "function") {
+		if (typeof(element["setCenter"]) == "function") {
 			$(this.getAttribute("swfname") ).setCenter(location, zoom);
 		}
 		else {
