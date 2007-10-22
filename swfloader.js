@@ -11,6 +11,7 @@
  * -----------------------------
  * - Made load() and loadSWFObject() the same, loadSWFObject() missed the expressinstall functionality
  * - "Fixed" checkExpressInstallSize();
+ * - Fixed bgcolor error
  *
  * Niels Nijens Mon Oct 15 2007
  * -----------------------------
@@ -97,17 +98,16 @@ SWFLoader.prototype = {
 		swfName = swfobject.getAttribute("swfname");
 		swfWidth = swfobject.getAttribute("width");
 		swfHeight = swfobject.getAttribute("height");
-		swfBgcolor = swfobject.getAttribute("bgcolor");
 		
 		if (this.checkPlayerVersion() ) {
 			this.addSWFObject(element, swfobject);
 		}
 		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(swfWidth, swfHeight) ) {
-			installObject = this.getSWFObject(element, swfName, "/lib/swfloader/expressinstall.swf", swfWidth, swfHeight, swfBgcolor, {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
+			installObject = this.getSWFObject(element, swfName, "/lib/swfloader/expressinstall.swf", swfWidth, swfHeight, "transparent", {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
 			this.addSWFObject(element, installObject);
 		}
 		else {
-			this.addAlternateContent(element, swfWidth, swfHeight, swfBgcolor);
+			this.addAlternateContent(element, swfWidth, swfHeight);
 		}
 	},
 
@@ -254,7 +254,7 @@ SWFLoader.prototype = {
 	 * @return SWFObject
 	 **/
 	getSWFObject: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
-		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace("/#/", ""), swfvars);
+		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace(/#/g, ""), swfvars);
 		return swfobject;
 	},
 
@@ -290,7 +290,7 @@ SWFLoader.prototype = {
 	 **/
 	addAlternateContent: function(element, width, height, bgcolor) {
 		if ($(element) ) {
-			Element.setStyle(element, {"width" : width, "height" : height, "background-color" : bgcolor, "text-align" : "center"});
+			Element.setStyle(element, {"width" : width, "height" : height, "text-align" : "center"});
 			$(element).innerHTML = "<a href='http://www.adobe.com/go/flashplayer' target='_blank'><img src='/lib/swfloader/images/getflashplayer.gif' border='0'/></a>";
 			return true;
 		}
