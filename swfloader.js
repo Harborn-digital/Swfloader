@@ -10,6 +10,7 @@
  * Niels Nijens Mon Oct 22 2007
  * -----------------------------
  * - Made load() and loadSWFObject() the same, loadSWFObject() missed the expressinstall functionality
+ * - "Fixed" checkExpressInstallSize();
  *
  * Niels Nijens Mon Oct 15 2007
  * -----------------------------
@@ -153,7 +154,7 @@ SWFLoader.prototype = {
 	 * @return boolean
 	 **/
 	checkExpressInstallSize: function(width, height) {
-		if (width >= this.expressInstallSize.width && height >= this.expressInstallSize.height) {
+		if ( (width == "100%" || height == "100%") || (width >= this.expressInstallSize.width && height >= this.expressInstallSize.height) ) {
 			return true;
 		}
 		return false;
