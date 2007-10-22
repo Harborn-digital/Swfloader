@@ -5,9 +5,9 @@
  * Changelog
  * ---------
  *
- * Niels Nijens Tue Oct 09 2007
+ * Niels Nijens Mon Oct 22 2007
  * -----------------------------
- * -
+ * -Changed function checks to this.methodExists();
  *
  * @since Tue Oct 09 2007
  * @author Niels Nijens (niels@connectholland.nl)
@@ -125,8 +125,7 @@ var GMapsObject = Class.extend(SWFObject, {
 
 
 	setCenter: function(location, zoom) {
-		element = $(this.getAttribute("swfname") );
-		if (typeof(element["setCenter"]) == "function") {
+		if (this.methodExists("setCenter") ) {
 			$(this.getAttribute("swfname") ).setCenter(location, zoom);
 		}
 		else {
@@ -136,8 +135,7 @@ var GMapsObject = Class.extend(SWFObject, {
 
 
 	loadKML: function(id, url) {
-		element = $(this.getAttribute("swfname") );
-		if (element["loadKML"] != undefined) {
+		if (this.methodExists("loadKML") ) {
 			$(this.getAttribute("swfname") ).loadKML(id, url);
 		}
 		else {
@@ -162,8 +160,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	 * @return void
 	 **/
 	setPointStyle: function(style) {
-		element = $(this.getAttribute("swfname") );
-		if (element["setPointStyle"] != undefined) {
+		if (this.methodExists("setPointStyle") ) {
 			$(this.getAttribute("swfname") ).setPointStyle(style);
 		}
 		else {
@@ -177,10 +174,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 
 	addPointToForm: function(point) {
-
 		this.xml.getElementsByTagName("placemark");
-
-
 		console.log("addPointToForm");
 		console.log(point);
 	}

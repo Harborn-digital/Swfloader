@@ -170,7 +170,7 @@ SWFLoader.prototype = {
 	 **/
 	getPlayerVersion: function() {
 		if (!this.installedVersion) {
-			this.installedVersion = {"major" : 0, "minor" : 0, "rev" : 0}
+			this.installedVersion = {"major" : 0, "minor" : 0, "rev" : 0};
 			if(navigator.plugins && navigator.mimeTypes.length) {
 				version = this.getPlayerVersionFF();
 			} else {
@@ -448,6 +448,10 @@ SWFLoader.prototype = {
  *
  * Changelog
  * ---------
+ *
+ * Niels Nijens Mon Oct 22 2007
+ * -----------------------------
+ * - Added methodExists(); for flash function calls
  *
  * Niels Nijens Tue Sep 18 2007
  * -----------------------------
@@ -804,6 +808,25 @@ SWFObject.prototype = {
 		if ($(element) ) {
 			$(element).innerHTML = this.getSWFHTML();
 			return true;
+		}
+		return false;
+	},
+	
+	/**
+	 * methodExists
+	 *
+	 * Returns if the method exists on the flash element
+	 *
+	 * @since Mon Oct 22 2007
+	 * @param string methodName
+	 * @return boolean
+	 **/
+	methodExists: function(methodName) {
+		element = $(this.getAttribute("swfname") );
+		if (element) {
+			if (typeof(element[methodName]) == "function") {
+				return true;
+			}
 		}
 		return false;
 	}
