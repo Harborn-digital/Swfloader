@@ -7,13 +7,13 @@
  *
  * Niels Nijens Tue Oct 09 2007
  * -----------------------------
- * - 
+ * -
  *
  * @since Tue Oct 09 2007
  * @author Niels Nijens (niels@connectholland.nl)
  **/
 var GMapsObject = Class.extend(SWFObject, {
-	
+
 	/**
 	 * initialize
 	 *
@@ -32,11 +32,11 @@ var GMapsObject = Class.extend(SWFObject, {
 	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
 		this.__parent.initialize(swfname, swffile, width, height, bgcolor, swfvars);
 		this.mapLoaded = false;
-		
+
 		ajaxEngine.registerRequest(swfname, "/index.php");
 		ajaxEngine.registerAjaxObject(swfname, this);
 	},
-	
+
 	/**
 	 * addFlashConfigVars
 	 *
@@ -49,8 +49,8 @@ var GMapsObject = Class.extend(SWFObject, {
 		this.addVariable("swfname", this.getAttribute("swfname") );
 		this.addVariable("swfpath", this.getAttribute("swffile").substr(0, this.getAttribute("swffile").lastIndexOf("/") + 1) );
 	},
-	
-	
+
+
 	searchGeoCode: function(button, formField) {
 		this.geoButton = button;
 		this.geoButtonValue = this.geoButton.value;
@@ -61,8 +61,8 @@ var GMapsObject = Class.extend(SWFObject, {
 		this.removeLayer("search");
 		ajaxEngine.sendRequest(this.getAttribute("swfname"), {parameters: "ct=gmaps&mode=geocode&mapid=" + this.getAttribute("swfname") + "&query=" + query});
 	},
-	
-	
+
+
 	ajaxUpdate: function(response) {
 		this.xml = response.firstChild;
 		switch (this.xml.getAttribute("mode") ) {
@@ -71,39 +71,39 @@ var GMapsObject = Class.extend(SWFObject, {
 				break;
 		}
 	},
-	
-	
+
+
 	geoCodeRequest: function() {
 		this.geoButton.value = this.geoButtonValue;
 		this.geoButton.disabled = false;
 		var placemarks = this.getPlacemarks();
-		
+
 		this.geoCodeSelect(placemarks);
 	},
-	
-	
+
+
 	geoCodeSelect: function(placemarks) {
 		for (i = 0; i < placemarks.length; i++) {
 			coordinates = this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0] );
 			coordinates = coordinates.split(",");
-			
+
 			if (placemarks[i].getElementsByTagName("city").length > 0) {
 				city = ", " + this.getNodeValue(placemarks[i].getElementsByTagName("city")[0] );
 			}
-			
+
 			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : this.getNodeValue(placemarks[i].getElementsByTagName("street")[0] ) + city};
 			this.addPoint("search", point, "select");
 		}
 	},
-	
+
 	getPlacemarks: function() {
 		return this.xml.getElementsByTagName("placemark");
 	},
-	
+
 	getPlacemarkByCoords: function(coords) {
-		
+
 	},
-	
+
 	/**
 	 * getNodeContent
 	 *
@@ -122,8 +122,8 @@ var GMapsObject = Class.extend(SWFObject, {
 			return node.text;
 		}
 	},
-	
-	
+
+
 	setCenter: function(location, zoom) {
 		element = $(this.getAttribute("swfname") );
 		if (typeof(element["setCenter"]) == "function") {
@@ -133,8 +133,8 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.setCenter.applyWithTimeout(this, 100, location, zoom);
 		}
 	},
-	
-	
+
+
 	loadKML: function(id, url) {
 		element = $(this.getAttribute("swfname") );
 		if (element["loadKML"] != undefined) {
@@ -144,12 +144,12 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.loadKML.applyWithTimeout(this, 100, id, url);
 		}
 	},
-	
-	
+
+
 	removeLayer: function(id) {
 		$(this.getAttribute("swfname") ).removeLayer(id);
 	},
-	
+
 	/**
 	 * setPointStyle
 	 *
@@ -170,17 +170,17 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.setPointStyle.applyWithTimeout(this, 100, style);
 		}
 	},
-	
-	
+
+
 	addPoint: function(id, point, mode) {
 		$(this.getAttribute("swfname") ).addPoint(id, point, mode);
 	},
-	
+
 	addPointToForm: function(point) {
-		
+
 		this.xml.getElementsByTagName("placemark");
-		
-		
+
+
 		console.log("addPointToForm");
 		console.log(point);
 	}

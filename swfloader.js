@@ -28,14 +28,14 @@
  *
  * To do
  * ---------
- * - 
+ * -
  *
  * @since Thu Sep 13 2007
  * @author Niels Nijens (niels@connectholland.nl)
  **/
 var SWFLoader = Class.create();
 SWFLoader.prototype = {
-	
+
 	/**
 	 * initialize
 	 *
@@ -53,7 +53,7 @@ SWFLoader.prototype = {
 		window.SWFError = this.SWFError.bind(this);
 		this.initUnload();
 	},
-	
+
 	/**
 	 * load
 	 *
@@ -82,7 +82,7 @@ SWFLoader.prototype = {
 			this.addAlternateContent(element, width, height, bgcolor);
 		}
 	},
-	
+
 	/**
 	 * loadSWFObject
 	 *
@@ -99,11 +99,14 @@ SWFLoader.prototype = {
 		if (this.checkPlayerVersion() ) {
 			this.addSWFObject(element, swfobject);
 		}
+		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(swfobject.getAttribute("width"), swfobject.getAttribute("height")) ) {
+			this.addSWF(element, swfname, "/lib/swfloader/expressinstall.swf", swfobject.getAttribute("width"), swfobject.getAttribute("height"), swfobject.getAttribute("bgcolor"), {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
+		}
 		else {
-			this.addAlternateContent(element, width, height, bgcolor);
+			this.addAlternateContent(element, swfobject.getAttribute("width"), swfobject.getAttribute("height"), swfobject.getAttribute("bgcolor"));
 		}
 	},
-	
+
 	/**
 	 * checkPlayerVersion
 	 *
@@ -119,7 +122,7 @@ SWFLoader.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * checkPlayerVersion
 	 *
@@ -135,7 +138,7 @@ SWFLoader.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * checkExpressInstallSize
 	 *
@@ -152,7 +155,7 @@ SWFLoader.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * getPlayerVersion
 	 *
@@ -179,7 +182,7 @@ SWFLoader.prototype = {
 		}
 		return this.installedVersion;
 	},
-	
+
 	/**
 	 * getVersionInt
 	 *
@@ -192,7 +195,7 @@ SWFLoader.prototype = {
 	getVersionInt: function(version) {
 		return (version.major * Math.pow(1000, 2) ) + (version.minor * 1000) + version.rev;
 	},
-	
+
 	/**
 	 * getPlayerVersionFF
 	 *
@@ -209,7 +212,7 @@ SWFLoader.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * getPlayerVersionIE
 	 *
@@ -229,7 +232,7 @@ SWFLoader.prototype = {
 			return false;
 		}
 	},
-	
+
 	/**
 	 * addSWF
 	 *
@@ -250,7 +253,7 @@ SWFLoader.prototype = {
 		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace("/#/", ""), swfvars);
 		this.addSWFObject(element, swfobject);
 	},
-	
+
 	/**
 	 * addSWFObject
 	 *
@@ -268,7 +271,7 @@ SWFLoader.prototype = {
 		this.swfobjects[swfname]["object"] = swfobject;
 		this.swfobjects[swfname]["object"].write(element);
 	},
-	
+
 	/**
 	 * addAlternateContent
 	 *
@@ -289,7 +292,7 @@ SWFLoader.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * addAlternateContentCallback
 	 *
@@ -300,10 +303,9 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	addAlternateContentCallback: function(element, width, height) {
-		console.log("test");
 		this.addAlternateContent(element, width, height);
 	},
-	
+
 	/**
 	 * getSWFObjectByName
 	 *
@@ -322,7 +324,7 @@ SWFLoader.prototype = {
 			return false;
 		}
 	},
-	
+
 	/**
 	 * getDivByName
 	 *
@@ -341,7 +343,7 @@ SWFLoader.prototype = {
 			return false;
 		}
 	},
-	
+
 	/**
 	 * SWFCall
 	 *
@@ -352,11 +354,11 @@ SWFLoader.prototype = {
 	 **/
 	SWFCall: function() {
 		flashVars = $A(arguments);
-		
+
 		swfname = flashVars.shift();
 		methodName = flashVars.shift();
 		methodVars = flashVars;
-		
+
 		swfobject = this.getSWFObjectByName(swfname);
 		if (swfobject) {
 			if (typeof(swfobject[methodName]) == "function") {
@@ -370,7 +372,7 @@ SWFLoader.prototype = {
 			this.SWFError("Object with name " + swfname + " doesn't exist.");
 		}
 	},
-	
+
 	/**
 	 * SWFError
 	 *
@@ -392,13 +394,13 @@ SWFLoader.prototype = {
 			}
 		}
 	},
-	
+
 	/**
 	 * initUnload
 	 *
 	 * Adds an onunload event to the document
 	 * This is needed for an IE video streaming bug in Flash Player
-	 * 
+	 *
 	 * See: http://blog.deconcept.com/2006/07/28/swfobject-143-released/
 	 *
 	 * @since Fri Sep 14 2007
@@ -411,7 +413,7 @@ SWFLoader.prototype = {
 			window.attachEvent("onunload", this.cleanupSWFObjects);
 		}
 	},
-	
+
 	/**
 	 * cleanupSWFObjects
 	 *
@@ -424,7 +426,7 @@ SWFLoader.prototype = {
 		if (window.opera || !document.all) {
 			return;
 		}
-		
+
 		var objects = document.getElementsByTagName("object");
 		for (i = 0; i < objects.length; i++) {
 			objects[i].style.display = 'none';
@@ -452,7 +454,7 @@ SWFLoader.prototype = {
  **/
 var SWFObject = Class.create();
 SWFObject.prototype = {
-	
+
 	/**
 	 * initialize
 	 *
@@ -474,7 +476,7 @@ SWFObject.prototype = {
 		this.initVariables(swfvars);
 		this.addFlashConfigVars();
 	},
-	
+
 	/**
 	 * initAttributes
 	 *
@@ -487,14 +489,14 @@ SWFObject.prototype = {
 	 **/
 	initAttributes: function(attributes) {
 		this.attributes = {};
-		
+
 		for(property in attributes) {
 			if (attributes[property]) {
 				this.setAttribute(property, attributes[property]);
 			}
 		}
 	},
-	
+
 	/**
 	 * initParams
 	 *
@@ -507,14 +509,14 @@ SWFObject.prototype = {
 	 **/
 	initParams: function(params) {
 		this.params = {};
-		
+
 		for(property in params) {
 			if (params[property]) {
 				this.addParam(property, params[property]);
 			}
 		}
 	},
-	
+
 	/**
 	 * initVariables
 	 *
@@ -527,14 +529,14 @@ SWFObject.prototype = {
 	 **/
 	initVariables: function(variables) {
 		this.variables = {};
-		
+
 		for(property in variables) {
 			if (variables[property]) {
 				this.addVariable(property, variables[property]);
 			}
 		}
 	},
-	
+
 	/**
 	 * addFlashConfigVars
 	 *
@@ -547,7 +549,7 @@ SWFObject.prototype = {
 		this.addVariable("swfname", this.getAttribute("swffile").substr(this.getAttribute("swffile").lastIndexOf("/") + 1, this.getAttribute("swffile").length - (this.getAttribute("swffile").lastIndexOf("/") + 5) ) );
 		this.addVariable("swfpath", this.getAttribute("swffile").substr(0, this.getAttribute("swffile").lastIndexOf("/") + 1) );
 	},
-	
+
 	/**
 	 * getColor
 	 *
@@ -563,7 +565,7 @@ SWFObject.prototype = {
 		}
 		return bgcolor;
 	},
-	
+
 	/**
 	 * getWMode
 	 *
@@ -579,7 +581,7 @@ SWFObject.prototype = {
 		}
 		return bgcolor;
 	},
-	
+
 	/**
 	 * setAttribute
 	 *
@@ -593,7 +595,7 @@ SWFObject.prototype = {
 	setAttribute: function(name, value){
 		this.attributes[name] = value;
 	},
-	
+
 	/**
 	 * getAttribute
 	 *
@@ -606,7 +608,7 @@ SWFObject.prototype = {
 	getAttribute: function(name) {
 		return this.attributes[name];
 	},
-	
+
 	/**
 	 * addParam
 	 *
@@ -620,7 +622,7 @@ SWFObject.prototype = {
 	addParam: function(name, value) {
 		this.params[name] = value;
 	},
-	
+
 	/**
 	 * getParams
 	 *
@@ -632,7 +634,7 @@ SWFObject.prototype = {
 	getParams: function() {
 		return this.params;
 	},
-	
+
 	/**
 	 * addVariable
 	 *
@@ -646,7 +648,7 @@ SWFObject.prototype = {
 	addVariable: function(name, value){
 		this.variables[name] = value;
 	},
-	
+
 	/**
 	 * getVariables
 	 *
@@ -658,7 +660,7 @@ SWFObject.prototype = {
 	getVariables: function() {
 		return this.variables;
 	},
-	
+
 	/**
 	 * getVariablePairs
 	 *
@@ -675,7 +677,7 @@ SWFObject.prototype = {
 		}
 		return variablePairs;
 	},
-	
+
 	/**
 	 * getSWFHTML
 	 *
@@ -694,7 +696,7 @@ SWFObject.prototype = {
 		}
 		return SWFNode;
 	},
-	
+
 	/**
 	 * getSWFHTMLEmbed
 	 *
@@ -711,10 +713,10 @@ SWFObject.prototype = {
 		SWFNode += this.getParamHTML(true);
 		SWFNode += this.getVariableHTML(true);
 		SWFNode += "/>";
-		
+
 		return SWFNode;
 	},
-	
+
 	/**
 	 * getSWFHTMLObject
 	 *
@@ -731,10 +733,10 @@ SWFObject.prototype = {
 		SWFNode += this.getParamHTML(false);
 		SWFNode += this.getVariableHTML(false);
 		SWFNode += "</object>";
-		
+
 		return SWFNode;
 	},
-	
+
 	/**
 	 * getParamHTML
 	 *
@@ -746,7 +748,7 @@ SWFObject.prototype = {
 	 **/
 	getParamHTML: function(embed) {
 		paramHTML = "";
-		
+
 		params = this.getParams();
 		for(var property in params) {
 			if (embed) {
@@ -756,10 +758,10 @@ SWFObject.prototype = {
 				paramHTML += '<param name="'+ property +'" value="'+ params[property] +'" />';
 			}
 		}
-		
+
 		return paramHTML;
 	},
-	
+
 	/**
 	 * getVariableHTML
 	 *
@@ -771,7 +773,7 @@ SWFObject.prototype = {
 	 **/
 	getVariableHTML: function(embed) {
 		variableHTML = "";
-		
+
 		variablestring = this.getVariablePairs().join("&");
 		if (variablestring.length > 0) {
 			if (embed) {
@@ -781,10 +783,10 @@ SWFObject.prototype = {
 				variableHTML += "<param name='flashvars' value='" + variablestring + "'/>";
 			}
 		}
-		
+
 		return variableHTML;
 	},
-	
+
 	/**
 	 * write
 	 *
