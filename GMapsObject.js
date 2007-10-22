@@ -65,7 +65,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	
 	ajaxUpdate: function(response) {
 		this.xml = response.firstChild;
-		switch (xml.getAttribute("mode") ) {
+		switch (this.xml.getAttribute("mode") ) {
 			case "geocode":
 				this.geoCodeRequest();
 				break;
@@ -73,26 +73,25 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 	
 	
-	geoCodeRequest: function(xml) {
+	geoCodeRequest: function() {
 		this.geoButton.value = this.geoButtonValue;
 		this.geoButton.disabled = false;
-		placemarks = xml.getElementsByTagName("placemark");
+		var placemarks = this.getPlacemarks();
 		
-		if (placemarks.length > 1) {
-			this.geoCodeSelect(placemarks);
-		}
-		else {
-			this.addGeoCodeToForm(placemarks[0]);
-		}
+		this.geoCodeSelect(placemarks);
 	},
 	
 	
 	geoCodeSelect: function(placemarks) {
 		for (i = 0; i < placemarks.length; i++) {
-			coordinates = this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0]);
+			coordinates = this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0] );
 			coordinates = coordinates.split(",");
 			
-			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : this.getNodeValue(placemarks[i].getElementsByTagName("street")[0]) + ", " + this.getNodeValue(placemarks[i].getElementsByTagName("city")[0])};
+			if (placemarks[i].getElementsByTagName("city").length > 0) {
+				city = ", " + this.getNodeValue(placemarks[i].getElementsByTagName("city")[0] );
+			}
+			
+			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : this.getNodeValue(placemarks[i].getElementsByTagName("street")[0] ) + city};
 			this.addPoint("search", point, "select");
 		}
 	},
@@ -113,7 +112,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	 * @since Tue Oct 09 2007
 	 * @access public
 	 * @param DomNode node
-	 * @return String
+	 * @return string
 	 **/
 	getNodeValue: function(node) {
 		if (node.textContent) {
@@ -126,7 +125,13 @@ var GMapsObject = Class.extend(SWFObject, {
 	
 	
 	setCenter: function(location, zoom) {
-		$(this.getAttribute("swfname") ).setCenter(location, zoom);
+		element = $(this.getAttribute("swfname") );
+		if (typeof(element["loadKML"]) == "function") {
+			$(this.getAttribute("swfname") ).setCenter(location, zoom);
+		}
+		else {
+			this.setCenter.applyWithTimeout(this, 100, location, zoom);
+		}
 	},
 	
 	
