@@ -101,7 +101,17 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 
 	getPlacemarkByCoords: function(coords) {
-
+		var coordsstring = coords[2] + "," + coords[1] + ",0";
+		var placemarks = this.getPlacemarks();
+		var placemarkobject = {};
+		for (i=0; i < placemarks.length; i++) {
+			if (coordsstring == this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0] ) ) {
+				for (j=0; j < placemarks[i].childNodes.length; j++) {
+					placemarkobject[placemarks[i].childNodes[j].nodeName] = this.getNodeValue(placemarks[i].childNodes[j] );
+				}
+			}
+		}
+		return placemarkobject;
 	},
 
 	/**
@@ -174,8 +184,16 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 
 	addPointToForm: function(point) {
-		this.xml.getElementsByTagName("placemark");
-		console.log("addPointToForm");
-		console.log(point);
+		var placemark = this.getPlacemarkByCoords(point);
+		if (typeof(this.callback) == "function") {
+			this.callback(placemark);
+		}
+		else {
+			//handle form in default way
+		}
+	},
+
+	registerCallback: function(callback) {
+		this.callback = callback;
 	}
 });

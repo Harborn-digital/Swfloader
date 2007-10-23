@@ -10,7 +10,6 @@
  * Niels Nijens Mon Oct 22 2007
  * -----------------------------
  * - Made load() and loadSWFObject() the same, loadSWFObject() missed the expressinstall functionality
- * - "Fixed" checkExpressInstallSize();
  * - Fixed bgcolor error
  *
  * Niels Nijens Mon Oct 15 2007
@@ -98,7 +97,7 @@ SWFLoader.prototype = {
 		swfName = swfobject.getAttribute("swfname");
 		swfWidth = swfobject.getAttribute("width");
 		swfHeight = swfobject.getAttribute("height");
-		
+
 		if (this.checkPlayerVersion() ) {
 			this.addSWFObject(element, swfobject);
 		}
@@ -154,7 +153,7 @@ SWFLoader.prototype = {
 	 * @return boolean
 	 **/
 	checkExpressInstallSize: function(width, height) {
-		if ( (width == "100%" || height == "100%") || (width >= this.expressInstallSize.width && height >= this.expressInstallSize.height) ) {
+		if (width >= this.expressInstallSize.width && height >= this.expressInstallSize.height) {
 			return true;
 		}
 		return false;
@@ -811,7 +810,7 @@ SWFObject.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * methodExists
 	 *
