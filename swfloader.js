@@ -78,7 +78,7 @@ SWFLoader.prototype = {
 	 **/
 	load: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
 		swfobject = this.getSWFObject(element, swfname, swffile, width, height, bgcolor, swfvars);
-		this.loadSWFObject(swfobject);
+		this.loadSWFObject(element, swfobject);
 	},
 
 	/**
