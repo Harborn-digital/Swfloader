@@ -101,11 +101,11 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 
 	getPlacemarkByCoords: function(coords) {
-		var coordsstring = coords[2] + "," + coords[1] + ",0";
 		var placemarks = this.getPlacemarks();
 		var placemarkobject = {};
 		for (i=0; i < placemarks.length; i++) {
-			if (coordsstring == this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0] ) ) {
+			var placemarkcoords = this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0] ).split(",");
+			if (coords[2] == new Number(placemarkcoords[0]) && coords[1] == new Number(placemarkcoords[1]) ) {
 				for (j=0; j < placemarks[i].childNodes.length; j++) {
 					placemarkobject[placemarks[i].childNodes[j].nodeName] = this.getNodeValue(placemarks[i].childNodes[j] );
 				}
