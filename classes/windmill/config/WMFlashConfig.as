@@ -5,9 +5,13 @@
  * Changelog
  * ---------
  * 
- * Niels Nijens Tue Sep 18 2007
- * ----------------------------
- * - 
+ * Niels Nijens - Wed Oct 31 2007
+ * --------------------------------
+ * - Added functions to set a SharedObject (Flash cookie) for the flash movie
+ * 
+ * Niels Nijens - Tue Oct 30 2007
+ * --------------------------------
+ * - Changed getVariable to be able to search within another node/XMLList item
  *
  * To Do
  * ---------
@@ -19,7 +23,7 @@
  **/
 package windmill.config {
 	import flash.display.Loader;
-    import flash.display.LoaderInfo;
+	import flash.display.LoaderInfo;
 	import flash.display.Sprite;
 	import flash.events.*;
 	import flash.net.*;
@@ -151,12 +155,16 @@ package windmill.config {
 		 * @since initial
 		 * @access public
 		 * @param String name
+		 * @param XMLList parentNode
 		 * @return mixed
 		 **/
-		public function getVariable(name:String) {
+		public function getVariable(name:String, parentNode = false) {
 			if (this.xml) {
 				var query:Array = name.split(".");
 				var results = this.xml;
+				if (parentNode) {
+					results = parentNode;
+				}
 				
 				for (var i = 0; i < query.length; i++) {
 					results = results.child(query[i]);
@@ -180,6 +188,52 @@ package windmill.config {
 		 **/
 		public function setVariable(name:String, value:String) {
 			
+		}
+		
+		/**
+		 * getCookie
+		 *
+		 * Returns a value with name from the SharedObject
+		 * 
+		 * @since Wed Oct 31 2007
+		 * @access public
+		 * @param String name
+		 * @return mixed
+		 **/
+		public function getCookie(name:String) {
+			var cookie:SharedObject = SharedObject.getLocal(this.swfname);
+			return cookie.data[name];
+		}
+		
+		/**
+		 * setCookie
+		 *
+		 * Sets a value with name into the SharedObject
+		 * 
+		 * @since Wed Oct 31 2007
+		 * @access public
+		 * @param String name
+		 * @param mixed value
+		 * @return void
+		 **/
+		public function setCookie(name:String, value) {
+			var cookie:SharedObject = SharedObject.getLocal(this.swfname);
+			cookie.setProperty(name, value);
+		}
+		
+		/**
+		 * setCookieTimestamp
+		 *
+		 * Sets the timestamp of the current date/time into the SharedObject
+		 * 
+		 * @since Wed Oct 31 2007
+		 * @access public
+		 * @return void
+		 **/
+		public function setCookieTimestamp() {
+			var cookie:SharedObject = SharedObject.getLocal(this.swfname);
+			var date:Date = new Date();
+			cookie.setProperty("timestamp", date.getTime() );
 		}
 	}
 }

@@ -7,26 +7,31 @@
  * Changelog
  * ---------
  *
- * Niels Nijens Mon Oct 22 2007
+ * Niels Nijens - Mon Oct 22 2007
+ * -----------------------------
+ * - Added unload function
+ * - Added timeout function to unload SWFObjects
+ *
+ * Niels Nijens - Mon Oct 22 2007
  * -----------------------------
  * - Made load() and loadSWFObject() the same, loadSWFObject() missed the expressinstall functionality
  * - Fixed bgcolor error
  *
- * Niels Nijens Mon Oct 15 2007
+ * Niels Nijens - Mon Oct 15 2007
  * -----------------------------
  * - Made SWFError(); able to call from Flash
  * - Added arguments to function calls from Flash (thanks to Giso)
  *
- * Niels Nijens Fri Sep 21 2007
+ * Niels Nijens - Fri Sep 21 2007
  * -----------------------------
  * - Added addFlashConfigVars(); for WMFlashConfig
  *
- * Niels Nijens Mon Sep 17 2007
+ * Niels Nijens - Mon Sep 17 2007
  * -----------------------------
  * - Added size check for the expressinstall
  * - Added addAlternateContentCallback();
  *
- * Niels Nijens Fri Sep 14 2007
+ * Niels Nijens - Fri Sep 14 2007
  * -----------------------------
  * - Added workaround (onunload) for IE video streaming bug in Flash Player
  * - Added default alternate content
@@ -308,7 +313,37 @@ SWFLoader.prototype = {
 	addAlternateContentCallback: function(element, width, height) {
 		this.addAlternateContent(element, width, height);
 	},
-
+	
+	/**
+	 * unload
+	 *
+	 * Unloads a SWFObject from the document
+	 *
+	 * @since Wed Oct 31 2007
+	 * @param string swfname
+	 * @return void
+	 **/
+	unload: function(swfname) {
+		this.processUnload.applyWithTimeout(this, 10, swfname);
+	},
+	
+	/**
+	 * processUnload
+	 *
+	 * Unloads a SWFObject from the document
+	 *
+	 * @since Wed Oct 31 2007
+	 * @param string swfname
+	 * @return void
+	 **/
+	processUnload: function(swfname) {
+		divElement = this.getDivByName(swfname);
+		if (divElement) {
+			divElement.removeChild(divElement.getElementsByTagName("embed")[0]);
+			this.swfobjects[swfname] = undefined;
+		}
+	},
+	
 	/**
 	 * getSWFObjectByName
 	 *
