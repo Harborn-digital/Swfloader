@@ -219,6 +219,7 @@ package windmill.config {
 		public function setCookie(name:String, value) {
 			var cookie:SharedObject = SharedObject.getLocal(this.swfname);
 			cookie.setProperty(name, value);
+			cookie.flush();
 		}
 		
 		/**
@@ -234,6 +235,7 @@ package windmill.config {
 			var cookie:SharedObject = SharedObject.getLocal(this.swfname);
 			var date:Date = new Date();
 			cookie.setProperty("timestamp", date.getTime() );
+			cookie.flush();
 		}
 	}
 }
