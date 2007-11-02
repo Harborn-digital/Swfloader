@@ -65,6 +65,9 @@ class windmill.net.WMGoogleMap {
 	 **/
 	var KMLLayer:Object;
 	
+	
+	var KMLData:XML;
+	
 	/**
 	 * Reference to the loading message
 	 *
@@ -174,6 +177,7 @@ class windmill.net.WMGoogleMap {
 			ExternalInterface.addCallback("removeLayer", this, this.removeLayer);
 			ExternalInterface.addCallback("setPointStyle", this, this.setPointStyle);
 			ExternalInterface.addCallback("addPoint", this, this.addPoint);
+			ExternalInterface.addCallback("closeInfoWindow", this, this.closeInfoWindow);
 		}
 	}
 	
@@ -250,8 +254,9 @@ class windmill.net.WMGoogleMap {
 	 **/
 	function loadKML(id, url, message) {
 		this.loadEvent(message);
+		this.gMap.addEventListener("MAP_ERROR", this.loadKMLError);
 		var layer = this.gMap.addKMLLayer({path: url});
-		layer.addEventListener("KML_LOAD_COMPLETE", this.loadKMLHandler);
+		layer.addEventListener("KML_LOAD_COMPLETE", this.loadKMLComplete);
 		layer.show();
 		
 		this.KMLLayer[id] = layer.id;
@@ -279,16 +284,30 @@ class windmill.net.WMGoogleMap {
 	}
 	
 	/**
-	 * loadKMLHandler
+	 * loadKMLComplete
 	 *
 	 * Removes the loading feedback after KML_LOAD_COMPLETE
 	 *
-	 * @since Mon Oct 08 2007
+	 * @since Fri Nov 02 2007 (previously known as loadKMLHandler)
 	 * @param Object event
 	 * @return void
 	 **/
-	function loadKMLHandler(event) {
+	function loadKMLComplete(event) {
 		_root.loadFeedback._visible = false;
+	}
+	
+	/**
+	 * loadKMLError
+	 *
+	 * Shows an error message as loading feedback after MAP_ERROR
+	 *
+	 * @since Fri Nov 02 2007
+	 * @param Object event
+	 * @return void
+	 **/
+	function loadKMLError(event) {
+		_root.loadFeedback.message.text = "Error";
+		ExternalInterface.call("SWFError", event.message);
 	}
 	
 	/**
@@ -484,5 +503,17 @@ class windmill.net.WMGoogleMap {
 	 **/
 	function showPointWindow(event) {
 		event.target.openInfoWindow({title: event.target.name, content: event.target.description});
+	}
+	
+	/**
+	 * closeInfoWindow
+	 *
+	 * Closes the active infowindow of a point
+	 *
+	 * @since Fri Nov 02 2007
+	 * @return void
+	 **/
+	function closeInfoWindow() {
+		this.gMap.closeInfoWindow();
 	}
 }

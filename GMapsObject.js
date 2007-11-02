@@ -59,6 +59,7 @@ var GMapsObject = Class.extend(SWFObject, {
 		this.geoFormField = formField;
 		query = formField.value;
 		this.removeLayer("search");
+		this.closeInfoWindow();
 		ajaxEngine.sendRequest(this.getAttribute("swfname"), {parameters: "ct=gmaps&mode=geocode&mapid=" + this.getAttribute("swfname") + "&query=" + query});
 	},
 
@@ -93,6 +94,9 @@ var GMapsObject = Class.extend(SWFObject, {
 
 			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : this.getNodeValue(placemarks[i].getElementsByTagName("street")[0] ) + city};
 			this.addPoint("search", point, "select");
+			if (placemarks.length == 1) {
+				this.setCenter({"lng" : coordinates[0], "lat" : coordinates[1]}, 8);
+			}
 		}
 	},
 
@@ -156,6 +160,24 @@ var GMapsObject = Class.extend(SWFObject, {
 
 	removeLayer: function(id) {
 		$(this.getAttribute("swfname") ).removeLayer(id);
+	},
+	
+	/**
+	 * closeInfoWindow
+	 *
+	 * Closes the active infowindow of a point
+	 *
+	 * @since Fri Nov 02 2007
+	 * @access public
+	 * @return void
+	 **/
+	closeInfoWindow: function() {
+		if (this.methodExists("closeInfoWindow") ) {
+			$(this.getAttribute("swfname") ).closeInfoWindow();
+		}
+		else {
+			this.closeInfoWindow.applyWithTimeout(this, 100);
+		}
 	},
 
 	/**
