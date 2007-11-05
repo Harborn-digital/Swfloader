@@ -7,7 +7,7 @@
  *
  * Niels Nijens Mon Oct 22 2007
  * -----------------------------
- * -Changed function checks to this.methodExists();
+ * - Changed function checks to this.methodExists();
  *
  * @since Tue Oct 09 2007
  * @author Niels Nijens (niels@connectholland.nl)

@@ -483,6 +483,10 @@ SWFLoader.prototype = {
  * Changelog
  * ---------
  *
+ * Niels Nijens Mon Nov 05 2007
+ * -----------------------------
+ * - Added getContainer(); to get the SWFObject's parent div
+ *
  * Niels Nijens Mon Oct 22 2007
  * -----------------------------
  * - Added methodExists(); for flash function calls
@@ -863,6 +867,18 @@ SWFObject.prototype = {
 			}
 		}
 		return false;
+	},
+	
+	/**
+	 * getContainer
+	 *
+	 * Returns the parent (container) div of the SWFObject
+	 *
+	 * @since Mon Nov 05 2007
+	 * @return mixed
+	 **/
+	getContainer: function() {
+		return swfloader.getDivByName(this.getAttribute("swfname") );
 	}
 }
 
