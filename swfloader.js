@@ -2,10 +2,14 @@
  * SWFLoader is the javascript loader class for flash embedding
  * Launches the expressinstall when the user doesn't have the required flash version installed
  *
- * This class can also load a Javascript / Actionscript Connection (not yet)
+ * This class also handles communication between the Flash movie and the JavaScript class
  *
  * Changelog
  * ---------
+ *
+ * Niels Nijens - Fri Nov 16 2007
+ * -----------------------------
+ * - Changed SWFCall(); so it will run registered callback functions
  *
  * Niels Nijens - Mon Oct 22 2007
  * -----------------------------
@@ -392,14 +396,18 @@ SWFLoader.prototype = {
 	 **/
 	SWFCall: function() {
 		flashVars = $A(arguments);
-
+		
 		swfname = flashVars.shift();
 		methodName = flashVars.shift();
 		methodVars = flashVars;
-
+		
 		swfobject = this.getSWFObjectByName(swfname);
 		if (swfobject) {
-			if (typeof(swfobject[methodName]) == "function") {
+			callbackFunction = swfobject.getCallbackByMethod(methodName);
+			if (typeof(callbackFunction["callback"]) == "function") {
+				return callbackFunction["callback"].apply(swfobject, methodVars);
+			}
+			else if (typeof(swfobject[methodName]) == "function") {
 				return swfobject[methodName].apply(swfobject, methodVars);
 			}
 			else {
@@ -483,16 +491,20 @@ SWFLoader.prototype = {
  * Changelog
  * ---------
  *
- * Niels Nijens Mon Nov 05 2007
- * -----------------------------
+ * Niels Nijens - Fri Nov 16 2007
+ * -------------------------------
+ * - Added registerCallback(); and getCallbackByMethod(); to override function calls from flash
+ *
+ * Niels Nijens - Mon Nov 05 2007
+ * -------------------------------
  * - Added getContainer(); to get the SWFObject's parent div
  *
- * Niels Nijens Mon Oct 22 2007
- * -----------------------------
+ * Niels Nijens - Mon Oct 22 2007
+ * -------------------------------
  * - Added methodExists(); for flash function calls
  *
- * Niels Nijens Tue Sep 18 2007
- * -----------------------------
+ * Niels Nijens - Tue Sep 18 2007
+ * -------------------------------
  * - Added getColor and getWmode to combine them into one variable bgcolor
  *
  * @since Thu Sep 13 2007
@@ -517,6 +529,7 @@ SWFObject.prototype = {
 	 * @return void
 	 **/
 	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
+		this.registeredCallbacks = {};
 		this.initAttributes({"swffile" : swffile, "swfname" : swfname, "width" : width, "height" : height});
 		this.initParams({"quality" : "high", "menu" : "false", "scale" : "noscale", "AllowScriptAccess" : "always", "bgcolor" : this.getColor(bgcolor), "wmode" : this.getWMode(bgcolor)});
 		this.initVariables(swfvars);
@@ -865,6 +878,37 @@ SWFObject.prototype = {
 			if (typeof(element[methodName]) == "function") {
 				return true;
 			}
+		}
+		return false;
+	},
+	
+	/**
+	 * registerCallback
+	 *
+	 * Registers a callback function to override the default function
+	 *
+	 * @since Fri Nov 16 2007
+	 * @param string methodName
+	 * @param function callbackFunction
+	 * @return void
+	 **/
+	registerCallback: function(methodName, callbackFunction) {
+		this.registeredCallbacks[methodName] = {};
+		this.registeredCallbacks[methodName]["callback"] = callbackFunction;
+	},
+	
+	/**
+	 * getCallbackByMethod
+	 *
+	 * Returns the registered callback function
+	 *
+	 * @since Fri Nov 16 2007
+	 * @param string methodName
+	 * @return object
+	 **/
+	getCallbackByMethod: function(methodName) {
+		if (this.registeredCallbacks[methodName] != undefined) {
+			return this.registeredCallbacks[methodName];
 		}
 		return false;
 	},

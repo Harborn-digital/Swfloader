@@ -1,23 +1,16 @@
 <html>
 	<head>
 		<title>Google Maps Test</title>
-		<script language='javascript' type='text/javascript' src='/lib/prototype/prototype.js'>&#160;</script>
-		<script language='javascript' type='text/javascript' src='/lib/prototype/inheritance.js'>&#160;</script>
-		<script language='javascript' type='text/javascript' src='/lib/prototype/ajaxengine.js'>&#160;</script>
-		<script language='javascript' type='text/javascript' src='/lib/swfloader/swfloader.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='prototype.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='inheritance.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='ajaxengine.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='../swfloader.js'>&#160;</script>
 		<script language='javascript' type='text/javascript' src='../GMapsObject.js'>&#160;</script>
 		<script language='javascript' type='text/javascript'>
-			function init() {
-				flashMovie = document.getElementById("gmap2");
+			function addPointToFormCallback() {
+				console.log("callback");
+				var placemark = this.getPlacemarkByCoords();
 			}
-
-			function addPoint() {
-				if (flashMovie) {
-					flashMovie.addPoint("");
-				}
-			}
-
-			window.onload = init;
 		</script>
 	</head>
 	<body>
@@ -25,13 +18,29 @@
 		<script language='javascript' type='text/javascript'>
 			gmapobject = new GMapsObject("gmap1", "/lib/swfloader/googlemap.swf", 400, 500, "transparent");
 			swfloader.loadSWFObject("gmaps", gmapobject);
-			gmapobject.setPointStyle({"icon" : "/images/googlelamp.png", "iconActive" : "/images/googlelamp-active.png"});
-			gmapobject.loadKML("layer", "/dalfsen.kml")
+			<!--gmapobject.setPointStyle({"icon" : "/images/googlelamp.png", "iconActive" : "/images/googlelamp-active.png"});-->
+			gmapobject.loadKML("kmllayer", "route2.kml")
 		</script>
+		<input type='button' value='Add Position Control' onclick='gmapobject.addControl("position");'/>
+		<input type='button' value='Add Zoom Control' onclick='gmapobject.addControl("zoom");'/>
+		<input type='button' value='Add View Control' onclick='gmapobject.addControl("view");'/>
+		<input type='button' value='Add Navigator Control' onclick='gmapobject.addControl("navigator");'/><br/>
+		<input type='button' value='Remove Position Control' onclick='gmapobject.removeControl("position");'/>
+		<input type='button' value='Remove Zoom Control' onclick='gmapobject.removeControl("zoom");'/>
+		<input type='button' value='Remove View Control' onclick='gmapobject.removeControl("view");'/>
+		<input type='button' value='Remove Navigator Control' onclick='gmapobject.removeControl("navigator");'/><br/>
+		<br/>
+		<input type='button' value='Toggle Controls' onclick='gmapobject.toggleControls();'/><br/>
 		<br/>
 		Search:<br/>
 		<input type='text' id='search' name='search'/><br/>
-		<input type='button' value='Zoek op kaart' onclick='gmapobject.searchGeoCode(this, $("search") );'/><br/>
+		<input type='button' value='Search map' onclick='gmapobject.searchGeoCode(this, $("search") );'/><br/>
 		<input type='button' value='Placemark test' onclick='gmapobject.addPoint("search", {lat: 51.909052, lng: 4.680007, name:"Add point test"});'/>
+		<input type='button' value='Focus test' onclick='gmapobject.focusLayer("kmllayer");'/><br/>
+		<input type='button' value='Print map' onclick='gmapobject.printMap();'/><br/>
+		<br/>
+		<input type='button' value='getCallbackByMethod' onclick='console.log(gmapobject.getCallbackByMethod("addPointToForm") );'/>
+		<input type='button' value='registerCallback' onclick='gmapobject.registerCallback("addPointToForm", addPointToFormCallback);'/>
+		<input type='button' value='Test Callback' onclick='SWFCall("gmap1", "addPointToForm", "test");'/>
 	</body>
 </html>

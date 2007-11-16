@@ -1531,7 +1531,12 @@ Element.Methods = {
     element.style.overflow = element._overflow == 'auto' ? '' : element._overflow;
     element._overflow = null;
     return element;
-  }
+  },
+
+  getTextContent: function(element) {
+    element = $(element);
+    return (typeof(element.textContent) == "undefined") ? element.innerText : element.textContent;
+	}
 };
 
 Object.extend(Element.Methods, {childOf: Element.Methods.descendantOf});

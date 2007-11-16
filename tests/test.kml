@@ -15,7 +15,7 @@
 			<Placemark>
 				<name>Test</name>
 				<description>Test</description>
-				<styleUrl>#ideaBulb</styleUrl>
+				<!--<styleUrl>#ideaBulb</styleUrl>-->
 				<Point>
 					<coordinates>4.480007,51.909052</coordinates>
 				</Point>
@@ -23,7 +23,7 @@
 			<Placemark>
 				<name>Test</name>
 				<description>Test</description>
-				<styleUrl>#ideaBulb</styleUrl>
+				<!--<styleUrl>#ideaBulb</styleUrl>-->
 				<Point>
 					<coordinates>5.480007,51.909052</coordinates>
 				</Point>
@@ -31,7 +31,7 @@
 			<Placemark>
 				<name>Test</name>
 				<description>Test</description>
-				<styleUrl>#ideaBulb</styleUrl>
+				<!--<styleUrl>#ideaBulb</styleUrl>-->
 				<Point>
 					<coordinates>4.480007,51.509052</coordinates>
 				</Point>

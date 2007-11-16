@@ -6,10 +6,20 @@
 import flash.external.*;
 
 /**
- * WMGoogleMap is the ActionScript 2 class for the Google maps in Flash
+ * WMGoogleMap is the ActionScript 2 class for Google Maps in Flash
  *
  * Changelog
- * ---------
+ * ------------
+ * 
+ * Niels Nijens - Fri Nov 16 2007
+ * ----------------------------------
+ * - Added addControl();, removeControl(); and toggleControls(); to the API
+ * - Made printMap(); use toggleControls(); to not have the controls on the print
+ * 
+ * Niels Nijens - Tue Nov 13 2007
+ * ----------------------------------
+ * - Added focusLayer(); to focus on the geometryobjects in a layer (very useful for showing KML files)
+ * - Added printMap(); to print the Google Map
  * 
  * Niels Nijens - Mon Oct 15 2007
  * ----------------------------------
@@ -29,14 +39,18 @@ import flash.external.*;
  * - Renamed class to WMGoogleMap and added it to the AS class library
  * - Added Javascript interface
  *
- * To do
- * ---------
- * -
+ * Known bugs
+ * ------------
+ * - focusLayer(); seems to not work right with the satellite view (zooms in to far)
  *
+ * To do
+ * ------------
+ * - Upgrade to ActionScript 3 (not possible until the AS3 GMap Component is released)
+ * - Improve printMap();
  *
  * @since Tue Oct 02 2007
  * @author Niels Nijens (niels@connectholland.nl)
- * @version AS2
+ * @version ActionScript 2
  * @package windmill.net
  **/
 class windmill.net.WMGoogleMap {
@@ -65,9 +79,6 @@ class windmill.net.WMGoogleMap {
 	 **/
 	var KMLLayer:Object;
 	
-	
-	var KMLData:XML;
-	
 	/**
 	 * Reference to the loading message
 	 *
@@ -85,6 +96,14 @@ class windmill.net.WMGoogleMap {
 	var pointStyle:Object;
 	
 	/**
+	 * Object with active controls
+	 *
+	 * @since Tue Nov 13 2007
+	 * @var Array
+	 **/
+	var mapControls:Object;
+	
+	/**
 	 * WMGoogleMap
 	 *
 	 * Creates a new instance of WMGoogleMap
@@ -97,6 +116,7 @@ class windmill.net.WMGoogleMap {
 		this.initMap();
 		
 		this.KMLLayer = new Object();
+		this.mapControls = new Object();
 		
 		this.prepareStage();
 		this.initAPI();
@@ -142,7 +162,7 @@ class windmill.net.WMGoogleMap {
 	 **/
 	function mapPositionHandler(event) {
 		var layers = this.gMap.getLayers();
-		for (var i=0; i < layers.length; i++) {
+		for (var i = 0; i < layers.length; i++) {
 			layers[i].updatePosition();
 		}
 	}
@@ -175,9 +195,14 @@ class windmill.net.WMGoogleMap {
 			ExternalInterface.addCallback("setCenter", this, this.setCenter);
 			ExternalInterface.addCallback("loadKML", this, this.loadKML);
 			ExternalInterface.addCallback("removeLayer", this, this.removeLayer);
+			ExternalInterface.addCallback("focusLayer", this, this.focusLayer);
 			ExternalInterface.addCallback("setPointStyle", this, this.setPointStyle);
 			ExternalInterface.addCallback("addPoint", this, this.addPoint);
 			ExternalInterface.addCallback("closeInfoWindow", this, this.closeInfoWindow);
+			ExternalInterface.addCallback("printMap", this, this.printMap);
+			ExternalInterface.addCallback("addControl", this, this.addControl);
+			ExternalInterface.addCallback("removeControl", this, this.removeControl);
+			ExternalInterface.addCallback("toggleControls", this, this.toggleControls);
 		}
 	}
 	
@@ -211,8 +236,8 @@ class windmill.net.WMGoogleMap {
 	function addControlsAndSettings() {
 		this.gMap.animatePan = true;
 		this.gMap.animateZoom = true;
-		this.gMap.addControl(this.gMap.GZoomControl({display: "compact"}) );
-		this.gMap.addControl(this.gMap.GPositionControl() );
+		this.addControl("zoom", {display: "compact"});
+		this.addControl("position");
 	}
 	
 	/**
@@ -230,7 +255,7 @@ class windmill.net.WMGoogleMap {
 	/**
 	 * setCenter
 	 *
-	 * 
+	 * Centers the Google Map on location
 	 *
 	 * @since initial
 	 * @param Object location
@@ -355,6 +380,45 @@ class windmill.net.WMGoogleMap {
 		var layer = this.getLayer(id);
 		if (layer) {
 			layer.clear();
+		}
+	}
+	
+	/**
+	 * focusLayer
+	 *
+	 * Focuses on a layer with id from the Google map
+	 * All the Geometry objects will be in the view
+	 *
+	 * @since Tue Nov 13 2007
+	 * @param String id
+	 * @return void
+	 **/
+	function focusLayer(id) {
+		var layer = this.getLayer(id);
+		if (layer) {
+			var maxlat:Number = Number.NEGATIVE_INFINITY;
+			var minlat:Number = Number.POSITIVE_INFINITY;
+			var maxlon:Number = Number.NEGATIVE_INFINITY;
+			var minlon:Number = Number.POSITIVE_INFINITY;
+			
+			var gObjects:Array = layer.getGeometryObjects();
+			for (var i:Number = 0; i < gObjects.length; i++) {
+				maxlat = Math.max(maxlat, gObjects[i].lat);
+				minlat = Math.min(minlat, gObjects[i].lat);
+				maxlon = Math.max(maxlon, gObjects[i].lng);
+				minlon = Math.min(minlon, gObjects[i].lng);
+			}
+			
+			var targetBounds = this.gMap.GBounds(minlon, maxlat, maxlon, minlat);
+			this.gMap.setBounds(targetBounds);
+			
+			// setBounds method tries to fit the view horizontaly or vertically
+			// if you want the full view -> uncomment these lines
+			/*var actualBounds = evt.target.core.getBounds();
+			
+			if (actualBounds.left > targetBounds.left || actualBounds.right < targetBounds.left || actualBounds.bottom > targetBounds.bottom || actualBounds.top < targetBounds.top) {
+				evt.target.core.zoomOut();
+			}*/
 		}
 	}
 	
@@ -515,5 +579,128 @@ class windmill.net.WMGoogleMap {
 	 **/
 	function closeInfoWindow() {
 		this.gMap.closeInfoWindow();
+	}
+	
+	/**
+	 * addControl
+	 *
+	 * Adds a control to the Google Map
+	 *
+	 * @since Fri Nov 16 2007
+	 * @param String type
+	 * @param Object settings
+	 * @return void
+	 **/
+	function addControl(type, settings) {
+		var control = this.getControl(type);
+		if (!control) {
+			this.mapControls[type] = this.gMap.addControl(this.getControlObject(type, settings) );
+		}
+		else {
+			control.show();
+		}
+	}
+	
+	/**
+	 * removeControl
+	 *
+	 * Removes a control from the Google Map
+	 *
+	 * @since Fri Nov 16 2007
+	 * @param String type
+	 * @return void
+	 **/
+	function removeControl(type) {
+		var control = this.getControl(type);
+		if (control) {
+			control.hide();
+			this.mapControls[type] = undefined;
+		}
+	}
+	
+	/**
+	 * toggleControls
+	 *
+	 * Toggles the controls on and off
+	 *
+	 * @since Fri Nov 16 2007
+	 * @param String type
+	 * @return void
+	 **/
+	function toggleControls() {
+		for (var type in this.mapControls) {
+			if (this.mapControls[type].visibility == "on") {
+				this.mapControls[type].hide();
+			}
+			else {
+				this.mapControls[type].show();
+			}
+		}
+	}
+	
+	/**
+	 * getControl
+	 *
+	 * Returns if the control type has been added
+	 *
+	 * @since Fri Nov 16 2007
+	 * @param String type
+	 * @return mixed
+	 **/
+	function getControl(type) {
+		if (this.mapControls[type] == undefined) {
+			return false;
+		}
+		return this.mapControls[type];
+	}
+	
+	/**
+	 * getControlObject
+	 *
+	 * Returns a new control object with type
+	 *
+	 * @since Fri Nov 16 2007
+	 * @param String type
+	 * @param Object settings
+	 * @return Object
+	 **/
+	function getControlObject(type, settings) {
+		switch(type) {
+			case "position":
+				return this.gMap.GPositionControl(settings);
+				break;
+			case "zoom":
+				return this.gMap.GZoomControl(settings);
+				break;
+			case "view":
+				return this.gMap.GTypeControl(settings);
+				break;
+			case "navigator":
+				return this.gMap.GNavigatorControl(settings);
+				break;
+		}
+	}
+	
+	/**
+	 * printMap
+	 *
+	 * Prints the active view of the map
+	 *
+	 * @since Tue Nov 13 2007
+	 * @return void
+	 * @todo improve / make smarter
+	 **/
+	function printMap() {
+		this.toggleControls();
+		
+		var printjob:PrintJob = new PrintJob();
+		if (printjob.start() ) {
+			if (printjob.addPage(0, {xMin: 0, xMax: Stage.width, yMin: 0, yMax: Stage.height}, {printAsBitmap: true}) ) {
+				printjob.send();
+			}
+		}
+		
+		this.toggleControls();
+		delete printjob;
 	}
 }
