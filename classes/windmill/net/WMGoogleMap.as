@@ -11,6 +11,11 @@ import flash.external.*;
  * Changelog
  * ------------
  * 
+ * Niels Nijens - Mon Nov 19 2007
+ * ----------------------------------
+ * - Added functionality to style the infoWindow
+ * - Improved the print functionality
+ * 
  * Niels Nijens - Fri Nov 16 2007
  * ----------------------------------
  * - Added addControl();, removeControl(); and toggleControls(); to the API
@@ -75,7 +80,7 @@ class windmill.net.WMGoogleMap {
 	 * An Array with references to the KML layers
 	 *
 	 * @since Mon Oct 08 2007
-	 * @var Array
+	 * @var Object
 	 **/
 	var KMLLayer:Object;
 	
@@ -99,9 +104,20 @@ class windmill.net.WMGoogleMap {
 	 * Object with active controls
 	 *
 	 * @since Tue Nov 13 2007
-	 * @var Array
+	 * @var Object
 	 **/
 	var mapControls:Object;
+	
+	/**
+	 * Object with set infoWindow style
+	 *
+	 * @since Mon Nov 19 2007
+	 * @var Object
+	 **/
+	var infoWindowStyle:Object;
+	
+	
+	var printDelayInterval;
 	
 	/**
 	 * WMGoogleMap
@@ -203,6 +219,7 @@ class windmill.net.WMGoogleMap {
 			ExternalInterface.addCallback("addControl", this, this.addControl);
 			ExternalInterface.addCallback("removeControl", this, this.removeControl);
 			ExternalInterface.addCallback("toggleControls", this, this.toggleControls);
+			ExternalInterface.addCallback("setInfoWindowStyle", this, this.setInfoWindowStyle);
 		}
 	}
 	
@@ -280,7 +297,7 @@ class windmill.net.WMGoogleMap {
 	function loadKML(id, url, message) {
 		this.loadEvent(message);
 		this.gMap.addEventListener("MAP_ERROR", this.loadKMLError);
-		var layer = this.gMap.addKMLLayer({path: url});
+		var layer = this.gMap.addKMLLayer({path: url, infoWindowStyle: this.getInfoWindowStyle() });
 		layer.addEventListener("KML_LOAD_COMPLETE", this.loadKMLComplete);
 		layer.show();
 		
@@ -682,25 +699,135 @@ class windmill.net.WMGoogleMap {
 	}
 	
 	/**
+	 * setInfoWindowStyle
+	 *
+	 * Sets the infoWindowStyle
+	 *
+	 * @since Mon Nov 19 2007
+	 * @param Object infoWindowStyle
+	 * @return void
+	 **/
+	function setInfoWindowStyle(infoWindowStyle) {
+		this.infoWindowStyle = infoWindowStyle;
+	}
+	
+	/**
+	 * getInfoWindowStyle
+	 *
+	 * Returns the default or set infoWindowStyle
+	 *
+	 * @since Mon Nov 19 2007
+	 * @return Object
+	 **/
+	function getInfoWindowStyle() {
+		if (this.infoWindowStyle != undefined) {
+			return this.infoWindowStyle;
+		}
+		return this.getDefaultInfoWindowStyle();
+	}
+	
+	/**
+	 * getDefaultInfoWindowStyle
+	 *
+	 * Returns the default infoWindowStyle
+	 *
+	 * @since Mon Nov 19 2007
+	 * @return Object
+	 **/
+	function getDefaultInfoWindowStyle() {
+		var infoWindowStyle:Object = new Object();
+		
+		var contentStyleSheet:TextField.StyleSheet = new TextField.StyleSheet();
+		contentStyleSheet.setStyle("html", {fontFamily: "Arial", fontSize: 12});
+		contentStyleSheet.setStyle("a", {fontFamily: "Arial", fontSize: 12, textDecoration: "underline", color: "#0000ff"});
+		contentStyleSheet.setStyle("a:hover", {fontFamily: "Arial", fontSize: 12, textDecoration: "none", color: "#ff0000"});
+		infoWindowStyle.contentStyle = contentStyleSheet;
+		
+		var titleStyleSheet:TextField.StyleSheet = new TextField.StyleSheet();
+		titleStyleSheet.setStyle("html", {fontFamily: "Arial", fontSize: 14, fontWeight: "bold"});
+		infoWindowStyle.titleStyle = titleStyleSheet;
+		
+		return infoWindowStyle;
+	}
+	
+	/**
 	 * printMap
 	 *
 	 * Prints the active view of the map
 	 *
 	 * @since Tue Nov 13 2007
+	 * @param String id
 	 * @return void
-	 * @todo improve / make smarter
 	 **/
-	function printMap() {
+	function printMap(id) {
+		this.printPointList(id);
+		this.printDelayInterval = setInterval(this, "startPrint", 1000);
+	}
+	
+	/**
+	 * startPrint
+	 *
+	 * Removes the controls and starts spooling to the printer
+	 *
+	 * @since Mon Nov 19 2007
+	 * @return void
+	 **/
+	function startPrint() {
+		clearInterval(this.printDelayInterval);
+		
 		this.toggleControls();
 		
 		var printjob:PrintJob = new PrintJob();
 		if (printjob.start() ) {
+			var pageCount:Number = 0;
+			
 			if (printjob.addPage(0, {xMin: 0, xMax: Stage.width, yMin: 0, yMax: Stage.height}, {printAsBitmap: true}) ) {
+				pageCount++;
+			}
+			
+			if (printjob.addPage("printPointContainer", {xMin: 0, xMax: _root.printPointContainer._width, yMin: 0, yMax: _root.printPointContainer._height}, {printAsBitmap: true}) ) {
+				pageCount++;
+			}
+			
+			if (pageCount > 0) {
 				printjob.send();
 			}
 		}
 		
 		this.toggleControls();
 		delete printjob;
+	}
+	
+	/**
+	 * printPointList
+	 *
+	 * Adds the list with points and their descriptions outside of the stage for printing purposes
+	 * Only one layer can be prepared to print (for now)
+	 *
+	 * @since Mon Nov 19 2007
+	 * @param String id
+	 * @return void
+	 **/
+	function printPointList(id) {
+		var layer = this.getLayer(id);
+		if (layer) {
+			var pointContainer = _root.createEmptyMovieClip("printPointContainer", _root.getNextHighestDepth() );
+			pointContainer._x = Stage.width + 10;
+			pointContainer._y = 0;
+			
+			var gObjects:Array = layer.getGeometryObjects();
+			for (var i = 0; i < gObjects.length; i++) {
+				if (gObjects[i].type == "GPoint") {
+					var printPoint = pointContainer.attachMovie("printPoint", "printPoint" + i, pointContainer.getNextHighestDepth() );
+					printPoint._x = 0;
+					printPoint._y = 100 * i;
+					printPoint.title.styleSheet = gObjects[i].infoWindowStyle.titleStyle;
+					printPoint.title.htmlText = gObjects[i].infoWindowStyle.title;
+					printPoint.description.autoSize = true;
+					printPoint.description.styleSheet = gObjects[i].infoWindowStyle.contentStyle;
+					printPoint.description.htmlText = gObjects[i].infoWindowStyle.content;
+				}
+			}
+		}
 	}
 }

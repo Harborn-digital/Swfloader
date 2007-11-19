@@ -16,7 +16,7 @@
 	<body>
 		<div id='gmaps'></div>
 		<script language='javascript' type='text/javascript'>
-			gmapobject = new GMapsObject("gmap1", "/lib/swfloader/googlemap.swf", 400, 500, "transparent");
+			gmapobject = new GMapsObject("gmap1", "/lib/swfloader/googlemap.swf", 400, 500, "FFFFFF");
 			swfloader.loadSWFObject("gmaps", gmapobject);
 			<!--gmapobject.setPointStyle({"icon" : "/images/googlelamp.png", "iconActive" : "/images/googlelamp-active.png"});-->
 			gmapobject.loadKML("kmllayer", "route2.kml")
@@ -37,7 +37,7 @@
 		<input type='button' value='Search map' onclick='gmapobject.searchGeoCode(this, $("search") );'/><br/>
 		<input type='button' value='Placemark test' onclick='gmapobject.addPoint("search", {lat: 51.909052, lng: 4.680007, name:"Add point test"});'/>
 		<input type='button' value='Focus test' onclick='gmapobject.focusLayer("kmllayer");'/><br/>
-		<input type='button' value='Print map' onclick='gmapobject.printMap();'/><br/>
+		<input type='button' value='Print map' onclick='gmapobject.printMap("kmllayer");'/><br/>
 		<br/>
 		<input type='button' value='getCallbackByMethod' onclick='console.log(gmapobject.getCallbackByMethod("addPointToForm") );'/>
 		<input type='button' value='registerCallback' onclick='gmapobject.registerCallback("addPointToForm", addPointToFormCallback);'/>

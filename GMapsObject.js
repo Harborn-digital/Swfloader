@@ -5,6 +5,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens - Mon Nov 19 2007
+ * -------------------------------
+ * - Added setInfoWindowStyle(); to style the infoWindow
+ *
  * Niels Nijens - Fri Nov 16 2007
  * -------------------------------
  * - Added addControl();, removeControl(); and toggleControls();
@@ -350,24 +354,6 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 	
 	/**
-	 * printMap
-	 *
-	 * Prints the active Google Map view
-	 *
-	 * @since Tue Nov 13 2007
-	 * @access public
-	 * @return void
-	 **/
-	printMap: function() {
-		if (this.methodExists("printMap") ) {
-			$(this.getAttribute("swfname") ).printMap();
-		}
-		else {
-			this.printMap.applyWithTimeout(this, 100);
-		}
-	},
-	
-	/**
 	 * addControl
 	 *
 	 * Adds a control to the Google Map
@@ -428,6 +414,43 @@ var GMapsObject = Class.extend(SWFObject, {
 		}
 		else {
 			this.toggleControls.applyWithTimeout(this, 100);
+		}
+	},
+	
+	/**
+	 * setInfoWindowStyle
+	 *
+	 * Sets the infoWindowStyle
+	 *
+	 * @since Mon Nov 19 2007
+	 * @param Object infoWindowStyle
+	 * @return void
+	 **/
+	setInfoWindowStyle: function(infoWindowStyle) {
+		if (this.methodExists("setInfoWindowStyle") ) {
+			$(this.getAttribute("swfname") ).setInfoWindowStyle(infoWindowStyle);
+		}
+		else {
+			this.setInfoWindowStyle.applyWithTimeout(this, 100, infoWindowStyle);
+		}
+	},
+	
+	/**
+	 * printMap
+	 *
+	 * Prints the active Google Map view
+	 *
+	 * @since Tue Nov 13 2007
+	 * @access public
+	 * @param string id
+	 * @return void
+	 **/
+	printMap: function(id) {
+		if (this.methodExists("printMap") ) {
+			$(this.getAttribute("swfname") ).printMap(id);
+		}
+		else {
+			this.printMap.applyWithTimeout(this, 100, id);
 		}
 	}
 });
