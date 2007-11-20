@@ -5,6 +5,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens - Tue Nov 20 2007
+ * -------------------------------
+ * - Added autofocus to loadKML();
+ *
  * Niels Nijens - Mon Nov 19 2007
  * -------------------------------
  * - Added setInfoWindowStyle(); to style the infoWindow
@@ -233,14 +237,15 @@ var GMapsObject = Class.extend(SWFObject, {
 	 * @since unknown
 	 * @param string id
 	 * @param string url
+	 * @param boolean autofocus
 	 * @return void
 	 **/
-	loadKML: function(id, url) {
+	loadKML: function(id, url, autofocus) {
 		if (this.methodExists("loadKML") ) {
-			$(this.getAttribute("swfname") ).loadKML(id, url);
+			$(this.getAttribute("swfname") ).loadKML(id, url, null, autofocus);
 		}
 		else {
-			this.loadKML.applyWithTimeout(this, 100, id, url);
+			this.loadKML.applyWithTimeout(this, 100, id, url, autofocus);
 		}
 	},
 	

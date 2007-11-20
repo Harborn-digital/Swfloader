@@ -11,6 +11,11 @@ import flash.external.*;
  * Changelog
  * ------------
  * 
+ * Niels Nijens - Tue Nov 20 2007
+ * ----------------------------------
+ * - Added autofocus to loadKML();
+ * - Improved the print functionality
+ * 
  * Niels Nijens - Mon Nov 19 2007
  * ----------------------------------
  * - Added functionality to style the infoWindow
@@ -51,7 +56,7 @@ import flash.external.*;
  * To do
  * ------------
  * - Upgrade to ActionScript 3 (not possible until the AS3 GMap Component is released)
- * - Improve printMap();
+ * - Remove _root calls from event functions
  *
  * @since Tue Oct 02 2007
  * @author Niels Nijens (niels@connectholland.nl)
@@ -83,6 +88,9 @@ class windmill.net.WMGoogleMap {
 	 * @var Object
 	 **/
 	var KMLLayer:Object;
+	
+	
+	var KMLAutoFocus:Boolean = false;
 	
 	/**
 	 * Reference to the loading message
@@ -292,9 +300,11 @@ class windmill.net.WMGoogleMap {
 	 * @param String id
 	 * @param String url
 	 * @param String message
+	 * @param Boolean autofocus
 	 * @return void
 	 **/
-	function loadKML(id, url, message) {
+	function loadKML(id, url, message, autofocus) {
+		this.KMLAutoFocus = autofocus;
 		this.loadEvent(message);
 		this.gMap.addEventListener("MAP_ERROR", this.loadKMLError);
 		var layer = this.gMap.addKMLLayer({path: url, infoWindowStyle: this.getInfoWindowStyle() });
@@ -333,9 +343,28 @@ class windmill.net.WMGoogleMap {
 	 * @since Fri Nov 02 2007 (previously known as loadKMLHandler)
 	 * @param Object event
 	 * @return void
+	 * @todo remove the _root calls
 	 **/
 	function loadKMLComplete(event) {
 		_root.loadFeedback._visible = false;
+		
+		var gObjects = event.target.getGeometryObjects();
+		for (var i = 0; i < gObjects.length; i++) {
+			if (gObjects[i].type == "GLine") {
+				gObjects[i].enabled = false;
+			}
+		}
+		
+		if (_root.map.KMLAutoFocus) {
+			var KMLLayers = _root.map.KMLLayer;
+			for (var layerName in KMLLayers) {
+				if (KMLLayers[layerName] == event.target.id) {
+					_root.map.focusLayer(layerName);
+				}
+			}
+			
+			_root.map.KMLAutoFocus = false;
+		}
 	}
 	
 	/**
@@ -431,11 +460,10 @@ class windmill.net.WMGoogleMap {
 			
 			// setBounds method tries to fit the view horizontaly or vertically
 			// if you want the full view -> uncomment these lines
-			/*var actualBounds = evt.target.core.getBounds();
-			
+			var actualBounds = this.gMap.getBounds();
 			if (actualBounds.left > targetBounds.left || actualBounds.right < targetBounds.left || actualBounds.bottom > targetBounds.bottom || actualBounds.top < targetBounds.top) {
-				evt.target.core.zoomOut();
-			}*/
+				this.gMap.zoomOut();
+			}
 		}
 	}
 	
@@ -785,8 +813,14 @@ class windmill.net.WMGoogleMap {
 				pageCount++;
 			}
 			
-			if (printjob.addPage("printPointContainer", {xMin: 0, xMax: _root.printPointContainer._width, yMin: 0, yMax: _root.printPointContainer._height}, {printAsBitmap: true}) ) {
-				pageCount++;
+			var printStart = 0;
+			var printHeight = _root.printPointContainer._height;
+			while (0 < printHeight) {
+				if (printjob.addPage("printPointContainer", {xMin: 0, xMax: _root.printPointContainer._width, yMin: printStart, yMax: (printStart + 800)}, {printAsBitmap: true}) ) {
+					printStart += 800;
+					printHeight -= 800;
+					pageCount++;
+				}
 			}
 			
 			if (pageCount > 0) {
@@ -815,19 +849,40 @@ class windmill.net.WMGoogleMap {
 			pointContainer._x = Stage.width + 10;
 			pointContainer._y = 0;
 			
+			var j = 0;
 			var gObjects:Array = layer.getGeometryObjects();
 			for (var i = 0; i < gObjects.length; i++) {
 				if (gObjects[i].type == "GPoint") {
-					var printPoint = pointContainer.attachMovie("printPoint", "printPoint" + i, pointContainer.getNextHighestDepth() );
+					var printPoint = pointContainer.attachMovie("printPoint", "printPoint" + j, pointContainer.getNextHighestDepth() );
 					printPoint._x = 0;
-					printPoint._y = 100 * i;
+					printPoint._y = 100 * j;
+					
+					var iconLoader:MovieClipLoader = new MovieClipLoader();
+					iconLoader.addListener(this);
+					iconLoader.loadClip(gObjects[i].icon, printPoint.iconContainer);
+					
 					printPoint.title.styleSheet = gObjects[i].infoWindowStyle.titleStyle;
 					printPoint.title.htmlText = gObjects[i].infoWindowStyle.title;
 					printPoint.description.autoSize = true;
 					printPoint.description.styleSheet = gObjects[i].infoWindowStyle.contentStyle;
 					printPoint.description.htmlText = gObjects[i].infoWindowStyle.content;
+					j++;
 				}
 			}
 		}
+	}
+	
+	/**
+	 * onLoadInit
+	 *
+	 * Onload handler for loading print icons
+	 *
+	 * @since Tue Nov 20 2007
+	 * @param MovieClip icon
+	 * @return void
+	 **/
+	function onLoadInit(icon) {
+		icon._x = (110 - icon._width) / 2;
+		icon._y = 5;
 	}
 }

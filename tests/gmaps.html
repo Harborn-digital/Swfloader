@@ -19,7 +19,7 @@
 			gmapobject = new GMapsObject("gmap1", "/lib/swfloader/googlemap.swf", 400, 500, "FFFFFF");
 			swfloader.loadSWFObject("gmaps", gmapobject);
 			<!--gmapobject.setPointStyle({"icon" : "/images/googlelamp.png", "iconActive" : "/images/googlelamp-active.png"});-->
-			gmapobject.loadKML("kmllayer", "route2.kml")
+			gmapobject.loadKML("kmllayer", "Schiedams pracht en praal.kml", true)
 		</script>
 		<input type='button' value='Add Position Control' onclick='gmapobject.addControl("position");'/>
 		<input type='button' value='Add Zoom Control' onclick='gmapobject.addControl("zoom");'/>
