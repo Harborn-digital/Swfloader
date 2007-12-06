@@ -471,6 +471,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	 * @return void
 	 **/
 	printMapWith: function(id, content) {
+		alert(content);
 		if (this.methodExists("printMapWith") ) {
 			$(this.getAttribute("swfname") ).printMapWith(id, content);
 		}

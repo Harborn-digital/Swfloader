@@ -806,6 +806,7 @@ class windmill.net.WMGoogleMap {
 	 * @param String id
 	 * @param String content
 	 * @return void
+	 * @todo refactor
 	 **/
 	function printMapWith(id, content) {
 		var printContentContainer = _root.createEmptyMovieClip("printContentContainer", _root.getNextHighestDepth() );
@@ -824,9 +825,22 @@ class windmill.net.WMGoogleMap {
 		printContent.styleSheet = contentStyleSheet;
 		
 		// formatting
-		var contentpieces = content.split("</li>");
+		var contentpieces;
+		if (content.indexOf("<li>") > 0) {
+			contentpieces = content.split("</li>");
+		}
+		else {
+			contentpieces = content.split("</LI>");
+		}
+		
 		content = contentpieces.join("");
-		contentpieces = content.split("<li>");
+		
+		if (content.indexOf("<li>") > 0) {
+			contentpieces = content.split("<li>");
+		}
+		else {
+			contentpieces = content.split("<LI>");
+		}
 		
 		printContent.htmlText = contentpieces[0].substr(0, contentpieces[0].lastIndexOf("<ol>") );
 		
