@@ -457,5 +457,25 @@ var GMapsObject = Class.extend(SWFObject, {
 		else {
 			this.printMap.applyWithTimeout(this, 100, id);
 		}
+	},
+	
+	/**
+	 * printMap
+	 *
+	 * Prints the active Google Map view with content
+	 *
+	 * @since Thu Dec 06 2007
+	 * @access public
+	 * @param string id
+	 * @param string content
+	 * @return void
+	 **/
+	printMapWith: function(id, content) {
+		if (this.methodExists("printMapWith") ) {
+			$(this.getAttribute("swfname") ).printMapWith(id, content);
+		}
+		else {
+			this.printMapWith.applyWithTimeout(this, 100, id, content);
+		}
 	}
 });

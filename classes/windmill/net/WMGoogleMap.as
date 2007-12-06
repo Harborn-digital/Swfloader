@@ -11,6 +11,10 @@ import flash.external.*;
  * Changelog
  * ------------
  * 
+ * Niels Nijens - Thu Dec 06 2007
+ * ----------------------------------
+ * - Added printMapWith(); to print the map with other content from the page
+ * 
  * Niels Nijens - Tue Nov 20 2007
  * ----------------------------------
  * - Added autofocus to loadKML();
@@ -224,6 +228,7 @@ class windmill.net.WMGoogleMap {
 			ExternalInterface.addCallback("addPoint", this, this.addPoint);
 			ExternalInterface.addCallback("closeInfoWindow", this, this.closeInfoWindow);
 			ExternalInterface.addCallback("printMap", this, this.printMap);
+			ExternalInterface.addCallback("printMapWith", this, this.printMapWith);
 			ExternalInterface.addCallback("addControl", this, this.addControl);
 			ExternalInterface.addCallback("removeControl", this, this.removeControl);
 			ExternalInterface.addCallback("toggleControls", this, this.toggleControls);
@@ -793,6 +798,56 @@ class windmill.net.WMGoogleMap {
 	}
 	
 	/**
+	 * printMapWith
+	 *
+	 * Prints the active view of the map with content
+	 *
+	 * @since Thu Dec 06 2007
+	 * @param String id
+	 * @param String content
+	 * @return void
+	 **/
+	function printMapWith(id, content) {
+		var printContentContainer = _root.createEmptyMovieClip("printContentContainer", _root.getNextHighestDepth() );
+		printContentContainer._x = Stage.width + 10;
+		printContentContainer._y = 0;
+		
+		var printContent = printContentContainer.createTextField("printContent", printContentContainer.getNextHighestDepth(), 0, 0, Stage.width, 100);
+		printContent.condenseWhite = true;
+		printContent.autoSize = true;
+		printContent.html = true;
+		printContent.selectable = false;
+		
+		var contentStyleSheet:TextField.StyleSheet = new TextField.StyleSheet();
+		contentStyleSheet.setStyle("html", {fontFamily: "Arial", fontSize: 12});
+		contentStyleSheet.setStyle("h2", {fontFamily: "Arial", fontSize: 14, fontWeight: "bold"});
+		printContent.styleSheet = contentStyleSheet;
+		
+		// formatting
+		var contentpieces = content.split("</li>");
+		content = contentpieces.join("");
+		contentpieces = content.split("<li>");
+		
+		printContent.htmlText = contentpieces[0].substr(0, contentpieces[0].lastIndexOf("<ol>") );
+		
+		for (var i = 1; i < contentpieces.length; i++) {
+			var offsetY = printContentContainer._height;
+			
+			var printContent = printContentContainer.attachMovie("printContent", "printContent" + (i - 1), printContentContainer.getNextHighestDepth() );
+			printContent._x = 0;
+			printContent._y = offsetY;
+			
+			printContent.contentNumber.text = i + ".";
+			printContent.content.condenseWhite = true;
+			printContent.content.autoSize = true;
+			printContent.content.html = true;
+			printContent.content.htmlText = contentpieces[i];
+		}
+		
+		this.printDelayInterval = setInterval(this, "startPrint", 1000);
+	}
+	
+	/**
 	 * startPrint
 	 *
 	 * Removes the controls and starts spooling to the printer
@@ -813,10 +868,20 @@ class windmill.net.WMGoogleMap {
 				pageCount++;
 			}
 			
-			var printStart = 0;
+			/*var printStart = 0;
 			var printHeight = _root.printPointContainer._height;
 			while (0 < printHeight) {
 				if (printjob.addPage("printPointContainer", {xMin: 0, xMax: _root.printPointContainer._width, yMin: printStart, yMax: (printStart + 800)}, {printAsBitmap: true}) ) {
+					printStart += 800;
+					printHeight -= 800;
+					pageCount++;
+				}
+			}*/
+			
+			var printStart = 0;
+			var printHeight = _root.printContentContainer._height;
+			while (0 < printHeight) {
+				if (printjob.addPage("printContentContainer", {xMin: 0, xMax: _root.printContentContainer._width, yMin: printStart, yMax: (printStart + 800)}, {printAsBitmap: true}) ) {
 					printStart += 800;
 					printHeight -= 800;
 					pageCount++;
