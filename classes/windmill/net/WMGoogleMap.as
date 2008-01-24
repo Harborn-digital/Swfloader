@@ -11,6 +11,10 @@ import flash.external.*;
  * Changelog
  * ------------
  * 
+ * Niels Nijens - Thu Jan 24 2008
+ * ----------------------------------
+ * - focusLayer(); now also centers on one point
+ * 
  * Niels Nijens - Thu Dec 06 2007
  * ----------------------------------
  * - Added printMapWith(); to print the map with other content from the page
@@ -447,27 +451,33 @@ class windmill.net.WMGoogleMap {
 	function focusLayer(id) {
 		var layer = this.getLayer(id);
 		if (layer) {
-			var maxlat:Number = Number.NEGATIVE_INFINITY;
-			var minlat:Number = Number.POSITIVE_INFINITY;
-			var maxlon:Number = Number.NEGATIVE_INFINITY;
-			var minlon:Number = Number.POSITIVE_INFINITY;
-			
 			var gObjects:Array = layer.getGeometryObjects();
-			for (var i:Number = 0; i < gObjects.length; i++) {
-				maxlat = Math.max(maxlat, gObjects[i].lat);
-				minlat = Math.min(minlat, gObjects[i].lat);
-				maxlon = Math.max(maxlon, gObjects[i].lng);
-				minlon = Math.min(minlon, gObjects[i].lng);
+			if (gObjects.length == 1) {
+				this.setCenter({lat: gObjects[0].lat, lng: gObjects[0].lng});
+				this.gMap.zoomIn(4);
 			}
-			
-			var targetBounds = this.gMap.GBounds(minlon, maxlat, maxlon, minlat);
-			this.gMap.setBounds(targetBounds);
-			
-			// setBounds method tries to fit the view horizontaly or vertically
-			// if you want the full view -> uncomment these lines
-			var actualBounds = this.gMap.getBounds();
-			if (actualBounds.left > targetBounds.left || actualBounds.right < targetBounds.left || actualBounds.bottom > targetBounds.bottom || actualBounds.top < targetBounds.top) {
-				this.gMap.zoomOut();
+			else {
+				var maxlat:Number = Number.NEGATIVE_INFINITY;
+				var minlat:Number = Number.POSITIVE_INFINITY;
+				var maxlon:Number = Number.NEGATIVE_INFINITY;
+				var minlon:Number = Number.POSITIVE_INFINITY;
+				
+				for (var i:Number = 0; i < gObjects.length; i++) {
+					maxlat = Math.max(maxlat, gObjects[i].lat);
+					minlat = Math.min(minlat, gObjects[i].lat);
+					maxlon = Math.max(maxlon, gObjects[i].lng);
+					minlon = Math.min(minlon, gObjects[i].lng);
+				}
+				
+				var targetBounds = this.gMap.GBounds(minlon, maxlat, maxlon, minlat);
+				this.gMap.setBounds(targetBounds);
+				
+				// setBounds method tries to fit the view horizontaly or vertically
+				// if you want the full view -> uncomment these lines
+				var actualBounds = this.gMap.getBounds();
+				if (actualBounds.left > targetBounds.left || actualBounds.right < targetBounds.left || actualBounds.bottom > targetBounds.bottom || actualBounds.top < targetBounds.top) {
+					this.gMap.zoomOut();
+				}
 			}
 		}
 	}
