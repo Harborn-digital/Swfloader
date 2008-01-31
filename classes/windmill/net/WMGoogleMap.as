@@ -388,8 +388,6 @@ class windmill.net.WMGoogleMap {
 				}
 			}
 			
-			_global.setTimeout(_root.map, "saveKML", 2000);
-			
 			_root.map.KMLAutoFocus = false;
 			_root.map.KMLSave = false;
 		}
@@ -489,8 +487,8 @@ class windmill.net.WMGoogleMap {
 		if (layer) {
 			var gObjects:Array = layer.getGeometryObjects();
 			if (gObjects.length == 1) {
-				this.setCenter({lat: gObjects[0].lat, lng: gObjects[0].lng});
-				this.gMap.zoomIn(4);
+				this.setCenter({lat: gObjects[0].lat, lng: gObjects[0].lng}, 9);
+				//this.gMap.zoomIn(4);
 			}
 			else {
 				var maxlat:Number = Number.NEGATIVE_INFINITY;
