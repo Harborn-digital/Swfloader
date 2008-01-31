@@ -487,8 +487,7 @@ class windmill.net.WMGoogleMap {
 		if (layer) {
 			var gObjects:Array = layer.getGeometryObjects();
 			if (gObjects.length == 1) {
-				this.setCenter({lat: gObjects[0].lat, lng: gObjects[0].lng}, 9);
-				//this.gMap.zoomIn(4);
+				this.setCenter({lat: gObjects[0].lat, lng: gObjects[0].lng}, 12);
 			}
 			else {
 				var maxlat:Number = Number.NEGATIVE_INFINITY;
