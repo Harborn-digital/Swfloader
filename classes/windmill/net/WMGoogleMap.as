@@ -5,6 +5,12 @@
  **/
 import flash.external.*;
 
+import flash.display.BitmapData;
+
+import windmill.data.BitmapDataSaver;
+
+import flash.geom.Rectangle;
+
 /**
  * WMGoogleMap is the ActionScript 2 class for Google Maps in Flash
  *
@@ -99,6 +105,12 @@ class windmill.net.WMGoogleMap {
 	
 	
 	var KMLAutoFocus:Boolean = false;
+	
+	
+	var KMLUrl:String;
+	
+	
+	var KMLSave:Boolean = false;
 	
 	/**
 	 * Reference to the loading message
@@ -310,10 +322,14 @@ class windmill.net.WMGoogleMap {
 	 * @param String url
 	 * @param String message
 	 * @param Boolean autofocus
+	 * @param Boolean save
 	 * @return void
 	 **/
-	function loadKML(id, url, message, autofocus) {
+	function loadKML(id, url, message, autofocus, save) {
 		this.KMLAutoFocus = autofocus;
+		this.KMLUrl = url;
+		this.KMLSave = save;
+		
 		this.loadEvent(message);
 		this.gMap.addEventListener("MAP_ERROR", this.loadKMLError);
 		var layer = this.gMap.addKMLLayer({path: url, infoWindowStyle: this.getInfoWindowStyle() });
@@ -372,7 +388,10 @@ class windmill.net.WMGoogleMap {
 				}
 			}
 			
+			_global.setTimeout(_root.map, "saveKML", 2000);
+			
 			_root.map.KMLAutoFocus = false;
+			_root.map.KMLSave = false;
 		}
 	}
 	
@@ -388,6 +407,23 @@ class windmill.net.WMGoogleMap {
 	function loadKMLError(event) {
 		_root.loadFeedback.message.text = "Error";
 		ExternalInterface.call("SWFError", event.message);
+	}
+	
+	
+	function saveKML() {
+		this.toggleControls();
+		
+		/*var screenshot:BitmapData = new BitmapData(Stage.width, Stage.height);
+		screenshot.draw(this.gMap);
+		
+		var variables = {};
+		variables["ct"] = _root.savect;
+		variables["__cms_" + _root.savemodule] = "true";
+		variables["__function_" + _root.savemodule] = _root.savefunction;
+		variables["filename"] = this.KMLUrl.substr(this.KMLUrl.lastIndexOf("/") );
+		
+		var bitmapSaver = new BitmapDataSaver(screenshot);
+		bitmapSaver.save(_root.saveurl, variables);*/
 	}
 	
 	/**

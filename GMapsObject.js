@@ -238,14 +238,15 @@ var GMapsObject = Class.extend(SWFObject, {
 	 * @param string id
 	 * @param string url
 	 * @param boolean autofocus
+	 * @param boolean save
 	 * @return void
 	 **/
-	loadKML: function(id, url, autofocus) {
+	loadKML: function(id, url, autofocus, save) {
 		if (this.methodExists("loadKML") ) {
-			$(this.getAttribute("swfname") ).loadKML(id, url, null, autofocus);
+			$(this.getAttribute("swfname") ).loadKML(id, url, null, autofocus, save);
 		}
 		else {
-			this.loadKML.applyWithTimeout(this, 100, id, url, autofocus);
+			this.loadKML.applyWithTimeout(this, 100, id, url, autofocus, save);
 		}
 	},
 	
