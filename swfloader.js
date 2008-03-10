@@ -60,7 +60,7 @@ SWFLoader.prototype = {
 	 **/
 	initialize: function() {
 		this.swfobjects = {};
-		this.requiredVersion = {"major" : 9, "minor" : 0, "rev" : 28};
+		this.requiredVersion = {"major" : 9, "minor" : 0, "rev" : 47};
 		this.expressInstallVersion = {"major" : 6, "minor" : 0, "rev" : 65};
 		this.expressInstallSize = {"width" : 215, "height" : 138};
 		window.SWFCall = this.SWFCall.bind(this);
