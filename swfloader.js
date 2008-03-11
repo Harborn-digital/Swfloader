@@ -7,36 +7,40 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens - Mon Mar 10 2008
+ * --------------------------------
+ * - Changed required version from 9.0.28 to 9.0.47 due to components bug
+ *
  * Niels Nijens - Fri Nov 16 2007
- * -----------------------------
+ * --------------------------------
  * - Changed SWFCall(); so it will run registered callback functions
  *
  * Niels Nijens - Mon Oct 22 2007
- * -----------------------------
+ * --------------------------------
  * - Added unload function
  * - Added timeout function to unload SWFObjects
  *
  * Niels Nijens - Mon Oct 22 2007
- * -----------------------------
+ * --------------------------------
  * - Made load() and loadSWFObject() the same, loadSWFObject() missed the expressinstall functionality
  * - Fixed bgcolor error
  *
  * Niels Nijens - Mon Oct 15 2007
- * -----------------------------
+ * --------------------------------
  * - Made SWFError(); able to call from Flash
  * - Added arguments to function calls from Flash (thanks to Giso)
  *
  * Niels Nijens - Fri Sep 21 2007
- * -----------------------------
+ * --------------------------------
  * - Added addFlashConfigVars(); for WMFlashConfig
  *
  * Niels Nijens - Mon Sep 17 2007
- * -----------------------------
+ * --------------------------------
  * - Added size check for the expressinstall
  * - Added addAlternateContentCallback();
  *
  * Niels Nijens - Fri Sep 14 2007
- * -----------------------------
+ * --------------------------------
  * - Added workaround (onunload) for IE video streaming bug in Flash Player
  * - Added default alternate content
  *
