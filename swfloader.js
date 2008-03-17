@@ -609,7 +609,7 @@ SWFObject.prototype = {
 	 * @return void
 	 **/
 	addFlashConfigVars: function() {
-		this.addVariable("swfname", this.getAttribute("swffile").substr(this.getAttribute("swffile").lastIndexOf("/") + 1, this.getAttribute("swffile").length - (this.getAttribute("swffile").lastIndexOf("/") + 5) ) );
+		this.addVariable("swfname", this.getAttribute("swffile").substr(this.getAttribute("swffile").lastIndexOf("/") + 1, this.getAttribute("swffile").lastIndexOf(".swf") - (this.getAttribute("swffile").lastIndexOf("/") + 1) ) );
 		this.addVariable("swfpath", this.getAttribute("swffile").substr(0, this.getAttribute("swffile").lastIndexOf("/") + 1) );
 	},
 
