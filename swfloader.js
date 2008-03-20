@@ -69,6 +69,8 @@ SWFLoader.prototype = {
 		this.expressInstallSize = {"width" : 215, "height" : 138};
 		window.SWFCall = this.SWFCall.bind(this);
 		window.SWFError = this.SWFError.bind(this);
+		window.SWFLogStart = this.SWFLogStart.bind(this);
+		window.SWFLogEnd = this.SWFLogEnd.bind(this);
 		this.initUnload();
 	},
 
@@ -84,7 +86,7 @@ SWFLoader.prototype = {
 	 * @param string swffile
 	 * @param integer width
 	 * @param integer height
-	 * @param string bgcolor -- transparent also works
+	 * @param string bgcolor - transparent also works
 	 * @param boolean wmode
 	 * @param object swfvars
 	 * @return void
@@ -422,12 +424,46 @@ SWFLoader.prototype = {
 			this.SWFError("Object with name " + swfname + " doesn't exist.");
 		}
 	},
-
+	
+	/**
+	 * SWFLogStart
+	 *
+	 * Starts time log
+	 * (For developers only)
+	 *
+	 * @since Thu Mar 20 2007
+	 * @param object debugInfo
+	 * @return void
+	 **/
+	SWFLogStart: function(debugInfo) {
+		if (console) {
+			console.log("loading (" + debugInfo.id + "): " + debugInfo.url);
+			console.time("response time (" + debugInfo.id + ")");
+		}
+	},
+	
+	/**
+	 * SWFLogEnd
+	 *
+	 * Ends time log
+	 * (For developers only)
+	 *
+	 * @since Thu Mar 20 2007
+	 * @param object debugInfo
+	 * @return void
+	 **/
+	SWFLogEnd: function(debugInfo) {
+		if (console) {
+			console.timeEnd("response time (" + debugInfo.id + ")");
+			console.log(debugInfo);
+		}
+	},
+	
 	/**
 	 * SWFError
 	 *
 	 * Prints an error in the console
-	 * For developers only
+	 * (For developers only)
 	 *
 	 * @since Thu Oct 11 2007
 	 * @param string message
