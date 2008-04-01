@@ -7,6 +7,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens - Tue Apr 01 2008
+ * --------------------------------
+ * - Changed required version from 9.0.47 to 9.0.115 due to some flash functionalities not working
+ *
  * Niels Nijens - Mon Mar 10 2008
  * --------------------------------
  * - Changed required version from 9.0.28 to 9.0.47 due to components bug
@@ -64,7 +68,7 @@ SWFLoader.prototype = {
 	 **/
 	initialize: function() {
 		this.swfobjects = {};
-		this.requiredVersion = {"major" : 9, "minor" : 0, "rev" : 47};
+		this.requiredVersion = {"major" : 9, "minor" : 0, "rev" : 115};
 		this.expressInstallVersion = {"major" : 6, "minor" : 0, "rev" : 65};
 		this.expressInstallSize = {"width" : 215, "height" : 138};
 		window.SWFCall = this.SWFCall.bind(this);
