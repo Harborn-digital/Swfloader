@@ -34,7 +34,7 @@
  * @author Niels Nijens (niels@connectholland.nl)
  **/
 var GMapsObject = Class.extend(SWFObject, {
-	
+
 	/**
 	 * initialize
 	 *
@@ -53,11 +53,11 @@ var GMapsObject = Class.extend(SWFObject, {
 	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
 		this.__parent.initialize(swfname, swffile, width, height, bgcolor, swfvars);
 		this.mapLoaded = false;
-		
+
 		ajaxEngine.registerRequest(swfname, "/index.php");
 		ajaxEngine.registerAjaxObject(swfname, this);
 	},
-	
+
 	/**
 	 * addFlashConfigVars
 	 *
@@ -70,7 +70,7 @@ var GMapsObject = Class.extend(SWFObject, {
 		this.addVariable("swfname", this.getAttribute("swfname") );
 		this.addVariable("swfpath", this.getAttribute("swffile").substr(0, this.getAttribute("swffile").lastIndexOf("/") + 1) );
 	},
-	
+
 	/**
 	 * searchGeoCode
 	 *
@@ -92,7 +92,7 @@ var GMapsObject = Class.extend(SWFObject, {
 		this.closeInfoWindow();
 		ajaxEngine.sendRequest(this.getAttribute("swfname"), {parameters: "ct=gmaps&mode=geocode&mapid=" + this.getAttribute("swfname") + "&query=" + query});
 	},
-	
+
 	/**
 	 * ajaxUpdate
 	 *
@@ -110,7 +110,7 @@ var GMapsObject = Class.extend(SWFObject, {
 				break;
 		}
 	},
-	
+
 	/**
 	 * geoCodeRequest
 	 *
@@ -123,10 +123,10 @@ var GMapsObject = Class.extend(SWFObject, {
 		this.geoButton.value = this.geoButtonValue;
 		this.geoButton.disabled = false;
 		var placemarks = this.getPlacemarks();
-		
+
 		this.geoCodeSelect(placemarks);
 	},
-	
+
 	/**
 	 * geoCodeSelect
 	 *
@@ -140,11 +140,11 @@ var GMapsObject = Class.extend(SWFObject, {
 		for (i = 0; i < placemarks.length; i++) {
 			coordinates = this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0] );
 			coordinates = coordinates.split(",");
-			
+
 			if (placemarks[i].getElementsByTagName("city").length > 0) {
 				city = ", " + this.getNodeValue(placemarks[i].getElementsByTagName("city")[0] );
 			}
-			
+
 			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : this.getNodeValue(placemarks[i].getElementsByTagName("street")[0] ) + city};
 			this.addPoint("search", point, "select");
 		}
@@ -155,7 +155,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.focusLayer("search");
 		}
 	},
-	
+
 	/**
 	 * getPlacemarks
 	 *
@@ -167,7 +167,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	getPlacemarks: function() {
 		return this.xml.getElementsByTagName("placemark");
 	},
-	
+
 	/**
 	 * getPlacemarkByCoords
 	 *
@@ -190,7 +190,7 @@ var GMapsObject = Class.extend(SWFObject, {
 		}
 		return placemarkobject;
 	},
-	
+
 	/**
 	 * getNodeContent
 	 *
@@ -209,7 +209,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			return node.text;
 		}
 	},
-	
+
 	/**
 	 * setCenter
 	 *
@@ -228,7 +228,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.setCenter.applyWithTimeout(this, 100, location, zoom);
 		}
 	},
-	
+
 	/**
 	 * loadKML
 	 *
@@ -249,7 +249,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.loadKML.applyWithTimeout(this, 100, id, url, autofocus, save);
 		}
 	},
-	
+
 	/**
 	 * removeLayer
 	 *
@@ -267,7 +267,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.removeLayer.applyWithTimeout(this, 100, id);
 		}
 	},
-	
+
 	/**
 	 * focusLayer
 	 *
@@ -285,7 +285,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.focusLayer.applyWithTimeout(this, 100, id);
 		}
 	},
-	
+
 	/**
 	 * closeInfoWindow
 	 *
@@ -303,7 +303,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.closeInfoWindow.applyWithTimeout(this, 100);
 		}
 	},
-	
+
 	/**
 	 * setPointStyle
 	 *
@@ -323,7 +323,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.setPointStyle.applyWithTimeout(this, 100, style);
 		}
 	},
-	
+
 	/**
 	 * addPoint
 	 *
@@ -338,7 +338,7 @@ var GMapsObject = Class.extend(SWFObject, {
 	addPoint: function(id, point, mode) {
 		$(this.getAttribute("swfname") ).addPoint(id, point, mode);
 	},
-	
+
 	/**
 	 * addPointToForm
 	 *
@@ -358,7 +358,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			//handle form in default way
 		}
 	},
-	
+
 	/**
 	 * addControl
 	 *
@@ -384,7 +384,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.addControl.applyWithTimeout(this, 100, type, settings);
 		}
 	},
-	
+
 	/**
 	 * removeControl
 	 *
@@ -404,7 +404,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.removeControl.applyWithTimeout(this, 100, type);
 		}
 	},
-	
+
 	/**
 	 * toggleControls
 	 *
@@ -422,7 +422,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.toggleControls.applyWithTimeout(this, 100);
 		}
 	},
-	
+
 	/**
 	 * setInfoWindowStyle
 	 *
@@ -440,7 +440,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.setInfoWindowStyle.applyWithTimeout(this, 100, infoWindowStyle);
 		}
 	},
-	
+
 	/**
 	 * isLoading
 	 *
@@ -454,8 +454,8 @@ var GMapsObject = Class.extend(SWFObject, {
 			return $(this.getAttribute("swfname") ).isLoading();
 		}
 		return true;
-	}
-	
+	},
+
 	/**
 	 * printMap
 	 *
@@ -474,7 +474,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			this.printMap.applyWithTimeout(this, 100, id);
 		}
 	},
-	
+
 	/**
 	 * printMap
 	 *
