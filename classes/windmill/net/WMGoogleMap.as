@@ -397,7 +397,7 @@ class windmill.net.WMGoogleMap {
 			_root.map.KMLSave = false;
 		}
 		
-		this.isLoading = false;
+		_root.map.isLoading = false;
 	}
 	
 	/**
