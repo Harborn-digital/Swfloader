@@ -112,6 +112,9 @@ class windmill.net.WMGoogleMap {
 	
 	var KMLSave:Boolean = false;
 	
+	
+	var isLoading:Boolean = false;
+	
 	/**
 	 * Reference to the loading message
 	 *
@@ -238,6 +241,7 @@ class windmill.net.WMGoogleMap {
 		if (ExternalInterface.available) {
 			ExternalInterface.addCallback("setCenter", this, this.setCenter);
 			ExternalInterface.addCallback("loadKML", this, this.loadKML);
+			ExternalInterface.addCallback("isLoading", this, this.KMLLoading);
 			ExternalInterface.addCallback("removeLayer", this, this.removeLayer);
 			ExternalInterface.addCallback("focusLayer", this, this.focusLayer);
 			ExternalInterface.addCallback("setPointStyle", this, this.setPointStyle);
@@ -329,6 +333,7 @@ class windmill.net.WMGoogleMap {
 		this.KMLAutoFocus = autofocus;
 		this.KMLUrl = url;
 		this.KMLSave = save;
+		this.isLoading = true;
 		
 		this.loadEvent(message);
 		this.gMap.addEventListener("MAP_ERROR", this.loadKMLError);
@@ -391,6 +396,8 @@ class windmill.net.WMGoogleMap {
 			_root.map.KMLAutoFocus = false;
 			_root.map.KMLSave = false;
 		}
+		
+		this.isLoading = false;
 	}
 	
 	/**
@@ -405,6 +412,11 @@ class windmill.net.WMGoogleMap {
 	function loadKMLError(event) {
 		_root.loadFeedback.message.text = "Error";
 		ExternalInterface.call("SWFError", event.message);
+	}
+	
+	
+	function KMLLoading() {
+		return this.isLoading;
 	}
 	
 	

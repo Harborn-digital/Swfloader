@@ -442,6 +442,21 @@ var GMapsObject = Class.extend(SWFObject, {
 	},
 	
 	/**
+	 * isLoading
+	 *
+	 * Returns if the map is loading
+	 *
+	 * @since Thu Apr 10 2008
+	 * @return boolean
+	 **/
+	isLoading: function() {
+		if (this.methodExists("isLoading") ) {
+			return $(this.getAttribute("swfname") ).isLoading();
+		}
+		return true;
+	}
+	
+	/**
 	 * printMap
 	 *
 	 * Prints the active Google Map view
