@@ -198,7 +198,6 @@ SWFLoader.prototype = {
 			} else {
 				version = this.getPlayerVersionIE();
 			}
-			console.log(version);
 			if (version) {
 				var i = 0;
 				for (property in this.installedVersion) {
