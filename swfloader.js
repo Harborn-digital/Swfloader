@@ -7,6 +7,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens - Mon May 19 2008
+ * --------------------------------
+ * - Fixed version retrieval for Flash Player 10 beta
+ *
  * Niels Nijens - Tue Apr 01 2008
  * --------------------------------
  * - Changed required version from 9.0.47 to 9.0.115 due to some flash functionalities not working
@@ -194,6 +198,7 @@ SWFLoader.prototype = {
 			} else {
 				version = this.getPlayerVersionIE();
 			}
+			console.log(version);
 			if (version) {
 				var i = 0;
 				for (property in this.installedVersion) {
@@ -230,7 +235,12 @@ SWFLoader.prototype = {
 	getPlayerVersionFF: function() {
 		var flashplayer = navigator.plugins["Shockwave Flash"];
 		if(flashplayer && flashplayer.description) {
-			return flashplayer.description.replace(/([a-zA-Z]|\s)+/, "").replace(/(\s+r|\s+b[0-9]+)/, ".").split(".");
+			var version = flashplayer.description.replace(/([a-zA-Z]|\s)+/, "").replace(/(\s+r|\s+b[0-9]+)/, ".").split(".");
+			if (version[2] == "") {
+				version[2] = "0";
+			}
+			
+			return version;
 		}
 		return false;
 	},
