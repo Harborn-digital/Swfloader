@@ -509,7 +509,8 @@ SWFLoader.prototype = {
 		if (!window.opera && document.all) {
 			__flash_unloadHandler = function(){};
 			__flash_savedUnloadHandler = function(){};
-			window.attachEvent("onunload", this.cleanupSWFObjects);
+			
+			//window.attachEvent("onunload", this.cleanupSWFObjects);
 		}
 	},
 
