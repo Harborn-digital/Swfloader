@@ -484,6 +484,15 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	SWFError: function(message, log) {
+		if ( $("consolewindow") ) {
+			if (!log) {
+				message = "ERROR: " + message;
+			}
+			
+			$("consolewindow").innerHTML += message + "<br/>";
+			
+			return;
+		}
 		if (console) {
 			if (log) {
 				console.log(message);
@@ -491,6 +500,8 @@ SWFLoader.prototype = {
 			else {
 				console.error("ERROR: " + message);
 			}
+			
+			return;
 		}
 	},
 
