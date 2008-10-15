@@ -141,11 +141,18 @@ var GMapsObject = Class.extend(SWFObject, {
 			coordinates = this.getNodeValue(placemarks[i].getElementsByTagName("coordinates")[0] );
 			coordinates = coordinates.split(",");
 
+			city = "";
 			if (placemarks[i].getElementsByTagName("city").length > 0) {
 				city = ", " + this.getNodeValue(placemarks[i].getElementsByTagName("city")[0] );
 			}
 
-			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : this.getNodeValue(placemarks[i].getElementsByTagName("street")[0] ) + city};
+			street = "";
+			if (placemarks[i].getElementsByTagName("street").length > 0) {
+				street = this.getNodeValue(placemarks[i].getElementsByTagName("street")[0] );
+			}
+
+			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : street + city};
+			
 			this.addPoint("search", point, "select");
 		}
 		if (placemarks.length == 1) {
@@ -336,7 +343,12 @@ var GMapsObject = Class.extend(SWFObject, {
 	 * @return void
 	 **/
 	addPoint: function(id, point, mode) {
-		$(this.getAttribute("swfname") ).addPoint(id, point, mode);
+		if (this.methodExists("addPoint") ) {
+			$(this.getAttribute("swfname") ).addPoint(id, point, mode);
+		}
+		else {
+			this.addPoint.applyWithTimeout(this, 100, id, point, mode);
+		}
 	},
 
 	/**
