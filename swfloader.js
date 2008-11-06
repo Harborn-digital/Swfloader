@@ -72,6 +72,7 @@ SWFLoader.prototype = {
 	 **/
 	initialize: function() {
 		this.swfobjects = {};
+		this.deeplinkListener = null;
 		this.requiredVersion = {"major" : 9, "minor" : 0, "rev" : 115};
 		this.expressInstallVersion = {"major" : 6, "minor" : 0, "rev" : 65};
 		this.expressInstallSize = {"width" : 215, "height" : 138};
@@ -79,6 +80,7 @@ SWFLoader.prototype = {
 		window.SWFError = this.SWFError.bind(this);
 		window.SWFLogStart = this.SWFLogStart.bind(this);
 		window.SWFLogEnd = this.SWFLogEnd.bind(this);
+		window.SWFDeeplink = this.SWFDeeplink.bind(this);
 		this.initUnload();
 	},
 
@@ -109,7 +111,7 @@ SWFLoader.prototype = {
 	 *
 	 * Adds a SWF file to the document when flash is available
 	 * Otherwise adds alternate content to the element
-	 * (This function should be used for extends of SWFObject, for example WmMediaPlayer)
+	 * (This function should be used for extends of SWFObject, for example MPlayerObject)
 	 *
 	 * @since initial
 	 * @param string element
@@ -120,7 +122,9 @@ SWFLoader.prototype = {
 		swfName = swfobject.getAttribute("swfname");
 		swfWidth = swfobject.getAttribute("width");
 		swfHeight = swfobject.getAttribute("height");
-
+		
+		this.checkDeeplinking(swfobject);
+		
 		if (this.checkPlayerVersion() ) {
 			this.addSWFObject(element, swfobject);
 		}
@@ -282,6 +286,7 @@ SWFLoader.prototype = {
 	 **/
 	getSWFObject: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
 		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace(/#/g, ""), swfvars);
+		
 		return swfobject;
 	},
 
@@ -504,7 +509,64 @@ SWFLoader.prototype = {
 			return;
 		}
 	},
-
+	
+	/**
+	 * checkDeeplink
+	 *
+	 * Checks if deeplinking should be enabled for swfobject
+	 *
+	 * @since Thu Nov 06 2008
+	 * @param SWFObject swfobject
+	 * @return void
+	 **/
+	checkDeeplinking: function (swfobject) {
+		var swfvars = swfobject.getVariables();
+		if (swfvars["deeplinking"] == true) {
+			swfobject.deeplinking = true;
+			if (this.deeplinkListener == null) {
+				this.deeplinkListener = this.broadcastDeeplink.applyWithInterval(this, 50);
+			}
+		}
+	},
+	
+	/**
+	 * SWFDeeplink
+	 *
+	 * Deeplink functionality for flash websites
+	 *
+	 * @since Thu Nov 06 2008
+	 * @param string link
+	 * @param string title
+	 * @return void
+	 **/
+	SWFDeeplink: function(link, title) {
+		document.location.title = title;
+		document.location.hash = link;
+	},
+	
+	/**
+	 * broadcastDeeplink
+	 *
+	 * Deeplink listener. Broadcasts the deeplink to the SWFObject's that have deeplinking enabled
+	 *
+	 * @since Thu Nov 06 2008
+	 * @param string link
+	 * @param string title
+	 * @return void
+	 **/
+	broadcastDeeplink: function() {
+		var deeplink = document.location.hash.replace(/#/g, "")
+		if (this.broadcastedDeeplink != deeplink) {
+			this.broadcastedDeeplink = deeplink;
+			
+			for (var swfname in this.swfobjects) {
+				if (this.swfobjects[swfname]["object"].deeplinking) {
+					this.swfobjects[swfname]["object"].setDeeplink(deeplink);
+				}
+			}
+		}
+	},
+	
 	/**
 	 * initUnload
 	 *
@@ -594,7 +656,9 @@ SWFObject.prototype = {
 	 * @return void
 	 **/
 	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
+		this.deeplinking = false;
 		this.registeredCallbacks = {};
+		
 		this.initAttributes({"swffile" : swffile, "swfname" : swfname, "width" : width, "height" : height});
 		this.initParams({"quality" : "high", "menu" : "false", "scale" : "noscale", "AllowScriptAccess" : "always", "bgcolor" : this.getColor(bgcolor), "wmode" : this.getWMode(bgcolor)});
 		this.initVariables(swfvars);
@@ -988,6 +1052,24 @@ SWFObject.prototype = {
 	 **/
 	getContainer: function() {
 		return swfloader.getDivByName(this.getAttribute("swfname") );
+	},
+	
+	/**
+	 * setDeeplink
+	 *
+	 * Sets the deeplink
+	 *
+	 * @since Thu Nov 06 2008
+	 * @param string link
+	 * @return void
+	 **/
+	setDeeplink: function(link) {
+		if (this.methodExists("setDeeplink") ) {
+			$(this.getAttribute("swfname") ).setDeeplink(link);
+		}
+		else {
+			this.setDeeplink.applyWithTimeout(this, 50, link);
+		}
 	}
 }
 
