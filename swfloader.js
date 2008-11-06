@@ -7,6 +7,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens - Thu Nov 06 2008
+ * --------------------------------
+ * - Added deeplinking
+ *
  * Niels Nijens - Mon May 19 2008
  * --------------------------------
  * - Fixed version retrieval for Flash Player 10 beta
@@ -556,7 +560,7 @@ SWFLoader.prototype = {
 	 **/
 	broadcastDeeplink: function() {
 		var deeplink = document.location.hash.replace(/#/g, "")
-		if (this.broadcastedDeeplink != deeplink) {
+		if (deeplink != null && this.broadcastedDeeplink != deeplink) {
 			this.broadcastedDeeplink = deeplink;
 			
 			for (var swfname in this.swfobjects) {
