@@ -559,8 +559,8 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	broadcastDeeplink: function() {
-		var deeplink = document.location.hash.replace(/#/g, "")
-		if (deeplink != null && this.broadcastedDeeplink != deeplink) {
+		var deeplink = document.location.hash.replace(/#/g, "");
+		if (deeplink != "" && this.broadcastedDeeplink != deeplink) {
 			this.broadcastedDeeplink = deeplink;
 			
 			for (var swfname in this.swfobjects) {
