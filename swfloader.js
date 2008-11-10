@@ -544,8 +544,10 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	SWFDeeplink: function(link, title) {
-		document.location.title = title;
-		document.location.hash = link;
+		document.location.hash = "#" + link;
+		if (title != "") {
+			document.title = title;
+		}
 	},
 	
 	/**
