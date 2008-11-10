@@ -7,6 +7,10 @@
  * Changelog
  * ---------
  *
+ * Niels Nijens - Mon Nov 10 2008
+ * --------------------------------
+ * - Added Debug interface for the new Debug class
+ *
  * Niels Nijens - Thu Nov 06 2008
  * --------------------------------
  * - Added deeplinking
@@ -84,6 +88,7 @@ SWFLoader.prototype = {
 		window.SWFError = this.SWFError.bind(this);
 		window.SWFLogStart = this.SWFLogStart.bind(this);
 		window.SWFLogEnd = this.SWFLogEnd.bind(this);
+		window.SWFDebug = this.SWFDebug.bind(this);
 		window.SWFDeeplink = this.SWFDeeplink.bind(this);
 		this.initUnload();
 	},
@@ -515,6 +520,35 @@ SWFLoader.prototype = {
 	},
 	
 	/**
+	 * SWFDebug
+	 *
+	 * Displays Debug messages from the SWF
+	 *
+	 * @since Mon Nov 10 2008
+	 * @return void
+	 **/
+	SWFDebug: function(level) {
+		var args = $A(arguments);
+		args.shift();
+		if (typeof(console) != "undefined" && typeof(console.error) == "function" && typeof(console.warn) == "function" && typeof(console.log) == "function") {
+			switch (level) {
+				case 1:
+					console.error.apply(console, args);
+					break;
+				case 2:
+					console.warn.apply(console, args);
+					break;
+				default:
+					console.log.apply(console, args);
+					break;
+			}
+		}
+		else {
+			throw Error(args);
+		}
+	},
+	
+	/**
 	 * checkDeeplink
 	 *
 	 * Checks if deeplinking should be enabled for swfobject
@@ -523,7 +557,7 @@ SWFLoader.prototype = {
 	 * @param SWFObject swfobject
 	 * @return void
 	 **/
-	checkDeeplinking: function (swfobject) {
+	checkDeeplinking: function(swfobject) {
 		var swfvars = swfobject.getVariables();
 		if (swfvars["deeplinking"] == true) {
 			swfobject.deeplinking = true;
