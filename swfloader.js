@@ -135,11 +135,11 @@ SWFLoader.prototype = {
 		this.checkDeeplinking(swfobject);
 		
 		if (this.checkPlayerVersion() ) {
-			this.addSWFObject(element, swfobject);
+			this.addSWFObject.bind(this).defer(element, swfobject);
 		}
 		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(swfWidth, swfHeight) ) {
 			installObject = this.getSWFObject(element, swfName, "/lib/swfloader/expressinstall.swf", swfWidth, swfHeight, "transparent", {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
-			this.addSWFObject(element, installObject);
+			this.addSWFObject.bind(this).defer(element, installObject);
 		}
 		else {
 			this.addAlternateContent(element, swfWidth, swfHeight);
