@@ -562,7 +562,7 @@ SWFLoader.prototype = {
 		if (swfvars["deeplinking"] == true) {
 			swfobject.deeplinking = true;
 			if (this.deeplinkListener == null) {
-				this.deeplinkListener = this.broadcastDeeplink.applyWithInterval(this, 50);
+				this.deeplinkListener = new PeriodicalExecuter(this.broadcastDeeplink.bind(this), 0.05);
 			}
 		}
 	},
