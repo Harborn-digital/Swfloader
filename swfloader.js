@@ -361,7 +361,7 @@ SWFLoader.prototype = {
 	 * @return void
 	 **/
 	unload: function(swfname) {
-		this.processUnload.applyWithTimeout(this, 10, swfname);
+		this.processUnload.bind(this).defer(swfname);
 	},
 	
 	/**
@@ -1108,7 +1108,7 @@ SWFObject.prototype = {
 			$(this.getAttribute("swfname") ).setDeeplink(link);
 		}
 		else {
-			this.setDeeplink.applyWithTimeout(this, 50, link);
+			this.setDeeplink.bind(this).delay(0.05, link);
 		}
 	}
 }
