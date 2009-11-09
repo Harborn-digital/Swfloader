@@ -332,7 +332,8 @@ SWFLoader.prototype = {
 	addAlternateContent: function(element, width, height, bgcolor) {
 		if ($(element) ) {
 			Element.setStyle(element, {"width" : width, "height" : height, "text-align" : "center"});
-			$(element).innerHTML = "<a href='http://www.adobe.com/go/flashplayer' target='_blank'><img src='/lib/swfloader/images/getflashplayer.gif' border='0'/></a>";
+			$(element).innerHTML = "<a class='swfloadergetflash' href='http://www.adobe.com/go/flashplayer' target='_blank'><img src='/lib/swfloader/images/getflashplayer.gif' border='0'/></a>";
+			element.fire("swfloader:loaded-getflashplayer");
 			return true;
 		}
 		return false;
