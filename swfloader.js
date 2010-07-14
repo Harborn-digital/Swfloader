@@ -331,10 +331,17 @@ SWFLoader.prototype = {
 	 **/
 	addAlternateContent: function(element, width, height, bgcolor) {
 		if ($(element) ) {
-			$(element).setStyle( {"width": width, "height": height, "textAlign": "center"} );
-			$(element).innerHTML = "<a class='swfloadergetflash' href='http://www.adobe.com/go/flashplayer' target='_blank'><img src='/lib/swfloader/images/getflashplayer.gif' border='0'/></a>";
-			$(element).fire("swfloader:loaded-getflashplayer", {"swfloader": this} );
-			return true;
+			var noflashelements = $(element).select(".noflash");
+			if (noflashelements.length > 0) {
+				noflashelements.invoke("show").invoke("fire", "swfloader:shown-noflashelement", {"swfloader": this} );
+				return true;
+			}
+			else {
+				$(element).setStyle( {"width": width, "height": height, "textAlign": "center"} );
+				$(element).innerHTML = "<a class='swfloadergetflash' href='http://www.adobe.com/go/flashplayer' target='_blank'><img src='/lib/swfloader/images/getflashplayer.gif' border='0'/></a>";
+				$(element).fire("swfloader:loaded-getflashplayer", {"swfloader": this} );
+				return true;
+			}
 		}
 		return false;
 	},
