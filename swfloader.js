@@ -218,6 +218,9 @@ SWFLoader.prototype = {
 					i++;
 				}
 			}
+			else {
+				return false;
+			}
 		}
 		return this.installedVersion;
 	},
