@@ -4,8 +4,8 @@
 		<script language='javascript' type='text/javascript' src='prototype.js'>&#160;</script>
 		<script language='javascript' type='text/javascript' src='inheritance.js'>&#160;</script>
 		<script language='javascript' type='text/javascript' src='ajaxengine.js'>&#160;</script>
-		<script language='javascript' type='text/javascript' src='../swfloader.js'>&#160;</script>
-		<script language='javascript' type='text/javascript' src='../GMapsObject.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='../dist/swfloader.js'>&#160;</script>
+		<script language='javascript' type='text/javascript' src='../dist/GMapsObject.js'>&#160;</script>
 		<script language='javascript' type='text/javascript'>
 			function addPointToFormCallback() {
 				console.log("callback");
@@ -16,7 +16,7 @@
 	<body>
 		<div id='gmaps'></div>
 		<script language='javascript' type='text/javascript'>
-			gmapobject = new GMapsObject("gmap1", "/lib/swfloader/googlemap.swf", 400, 500, "FFFFFF");
+			gmapobject = new GMapsObject("gmap1", "../dist/googlemap.swf", 400, 500, "FFFFFF");
 			swfloader.loadSWFObject("gmaps", gmapobject);
 			<!--gmapobject.setPointStyle({"icon" : "/images/googlelamp.png", "iconActive" : "/images/googlelamp-active.png"});-->
 			gmapobject.loadKML("kmllayer", "test.kml", true);

@@ -1,0 +1,34 @@
+{
+    "default_tasks": [
+        "javascript",
+        "javascriptgooglemaps"
+    ],
+    "install_tasks": [],
+    "production": true,
+    "javascript": {
+        "src": [
+            "src/swfloader.js"
+        ],
+        "dest": "dist/",
+        "outputname": "swfloader.js",
+        "watch": [
+            "src/**/*.js"
+        ],
+        "options": {
+            "mangle": false
+        }
+    },
+    "javascriptgooglemaps": {
+        "src": [
+            "src/GMapsObject.js"
+        ],
+        "dest": "dist/",
+        "outputname": "GMapsObject.js",
+        "watch": [
+            "src/**/*.js"
+        ],
+        "options": {
+            "mangle": false
+        }
+    }
+}

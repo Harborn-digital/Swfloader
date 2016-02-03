@@ -1,0 +1,35 @@
+{
+    "name": "connectholland-swfloader",
+    "version": "0.0.1",
+    "description": "SWF Loader",
+    "license" : "MIT",
+    "files": [
+        "dist/"
+    ],
+    "dependencies": {
+    },
+    "devDependencies": {
+        "gulp": "^3.8.11",
+        "gulp-autoprefixer": "^2.3.1",
+        "gulp-concat": "^2.5.2",
+        "gulp-consolidate": "^0.1.2",
+        "gulp-iconfont": "^2.0.0",
+        "gulp-if": "^1.2.5",
+        "gulp-livereload": "^3.8.0",
+        "gulp-load-plugins": "^0.10.0",
+        "gulp-more-css": "^1.0.0",
+        "gulp-plumber": "^1.0.1",
+        "gulp-rename": "^1.2.2",
+        "gulp-sass": "^2.0.1",
+        "gulp-simple-task-loader": "^1.0.38",
+        "gulp-sourcemaps": "^1.5.2",
+        "gulp-svgmin": "^1.1.2",
+        "gulp-uglify": "^1.2.0",
+        "gulp-util": "^3.0.4",
+        "lodash": "^3.9.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ConnectHolland/Swfloader.git"
+    }
+}

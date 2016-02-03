@@ -1,0 +1,21 @@
+{
+    "name": "connectholland-swfloader",
+    "description": "SWF Loader",
+    "authors": [
+        "Giso Stallenberg <gisostallenberg@gmail.com>"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/ConnectHolland/Swfloader",
+    "moduleType": [],
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "src",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "gulp-tasks": "svn+ssh://svn.repositories.connectholland.nl/srv/svn/main/bower_components/gulp-tasks/#^1.0"
+    }
+}
