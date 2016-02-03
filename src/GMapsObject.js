@@ -152,7 +152,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			}
 
 			point = {"lng" : coordinates[0], "lat" : coordinates[1], "name" : street + city};
-			
+
 			this.addPoint("search", point, "select");
 		}
 		if (placemarks.length == 1) {
@@ -232,7 +232,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).setCenter(location, zoom);
 		}
 		else {
-			this.setCenter.applyWithTimeout(this, 100, location, zoom);
+			this.setCenter.bind(this).delay(100, location, zoom);
 		}
 	},
 
@@ -253,7 +253,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).loadKML(id, url, null, autofocus, save);
 		}
 		else {
-			this.loadKML.applyWithTimeout(this, 100, id, url, autofocus, save);
+			this.loadKML.bind(this).delay(100, id, url, autofocus, save);
 		}
 	},
 
@@ -271,7 +271,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).removeLayer(id);
 		}
 		else {
-			this.removeLayer.applyWithTimeout(this, 100, id);
+			this.removeLayer.bind(this).delay(100, id);
 		}
 	},
 
@@ -289,7 +289,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).focusLayer(id);
 		}
 		else {
-			this.focusLayer.applyWithTimeout(this, 100, id);
+			this.focusLayer.bind(this).delay(100, id);
 		}
 	},
 
@@ -307,7 +307,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).closeInfoWindow();
 		}
 		else {
-			this.closeInfoWindow.applyWithTimeout(this, 100);
+			this.closeInfoWindow.bind(this).delay(100);
 		}
 	},
 
@@ -327,7 +327,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).setPointStyle(style);
 		}
 		else {
-			this.setPointStyle.applyWithTimeout(this, 100, style);
+			this.setPointStyle.bind(this).delay(100, style);
 		}
 	},
 
@@ -347,7 +347,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).addPoint(id, point, mode);
 		}
 		else {
-			this.addPoint.applyWithTimeout(this, 100, id, point, mode);
+			this.addPoint.bind(this).delay(100, id, point, mode);
 		}
 	},
 
@@ -393,7 +393,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).addControl(type, settings);
 		}
 		else {
-			this.addControl.applyWithTimeout(this, 100, type, settings);
+			this.addControl.bind(this).delay(100, type, settings);
 		}
 	},
 
@@ -413,7 +413,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).removeControl(type);
 		}
 		else {
-			this.removeControl.applyWithTimeout(this, 100, type);
+			this.removeControl.bind(this).delay(100, type);
 		}
 	},
 
@@ -431,7 +431,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).toggleControls();
 		}
 		else {
-			this.toggleControls.applyWithTimeout(this, 100);
+			this.toggleControls.bind(this).delay(100);
 		}
 	},
 
@@ -449,7 +449,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).setInfoWindowStyle(infoWindowStyle);
 		}
 		else {
-			this.setInfoWindowStyle.applyWithTimeout(this, 100, infoWindowStyle);
+			this.setInfoWindowStyle.bind(this).delay(100, infoWindowStyle);
 		}
 	},
 
@@ -483,7 +483,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).printMap(id);
 		}
 		else {
-			this.printMap.applyWithTimeout(this, 100, id);
+			this.printMap.bind(this).delay(100, id);
 		}
 	},
 
@@ -503,7 +503,7 @@ var GMapsObject = Class.extend(SWFObject, {
 			$(this.getAttribute("swfname") ).printMapWith(id, content);
 		}
 		else {
-			this.printMapWith.applyWithTimeout(this, 100, id, content);
+			this.printMapWith.bind(this).delay(100, id, content);
 		}
 	}
 });

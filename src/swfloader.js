@@ -67,8 +67,7 @@
  * @since Thu Sep 13 2007
  * @author Niels Nijens (niels@connectholland.nl)
  **/
-var SWFLoader = Class.create();
-SWFLoader.prototype = {
+var SWFLoader = Class.create({
 
 	/**
 	 * initialize
@@ -131,14 +130,14 @@ SWFLoader.prototype = {
 		swfName = swfobject.getAttribute("swfname");
 		swfWidth = swfobject.getAttribute("width");
 		swfHeight = swfobject.getAttribute("height");
-		
+
 		this.checkDeeplinking(swfobject);
-		
+
 		if (this.checkPlayerVersion() ) {
 			this.addSWFObject.bind(this).defer(element, swfobject);
 		}
 		else if (this.checkExpressInstallVersion() && this.checkExpressInstallSize(swfWidth, swfHeight) ) {
-			installObject = this.getSWFObject(element, swfName, "/lib/swfloader/expressinstall.swf", swfWidth, swfHeight, "transparent", {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
+			installObject = this.getSWFObject(element, swfName, "expressinstall.swf", swfWidth, swfHeight, "transparent", {"SWFContainer" : element, "MMredirectURL" : escape(window.location), "MMdoctitle" : document.title});
 			this.addSWFObject.bind(this).defer(element, installObject);
 		}
 		else {
@@ -254,7 +253,7 @@ SWFLoader.prototype = {
 			if (version[2] == "") {
 				version[2] = "0";
 			}
-			
+
 			return version;
 		}
 		return false;
@@ -298,7 +297,7 @@ SWFLoader.prototype = {
 	 **/
 	getSWFObject: function(element, swfname, swffile, width, height, bgcolor, swfvars) {
 		swfobject = new SWFObject(swfname, swffile, width, height, bgcolor.replace(/#/g, ""), swfvars);
-		
+
 		return swfobject;
 	},
 
@@ -341,7 +340,7 @@ SWFLoader.prototype = {
 			}
 			else {
 				$(element).setStyle( {"width": width, "height": height, "textAlign": "center"} );
-				$(element).innerHTML = "<a class='swfloadergetflash' href='http://www.adobe.com/go/flashplayer' target='_blank'><img src='/lib/swfloader/images/getflashplayer.gif' border='0'/></a>";
+				$(element).innerHTML = "<a class='swfloadergetflash' href='https://get.adobe.com/flashplayer/?no_redirect' target='_blank'><img src='data:image/gif;base64,R0lGODlhWAAfANUAAAAAAOvw9Jq0xF2Hof8fH09PT6+vr9fh6DMzM/9fX5mZmf+ZmXNzc//JyczMzP9HR3uesxkZGUxMTP96eu/v7//v78jIyP+3t2tra7jL1hAQEP88PP///4+Pj2ePp7+/v5CtvuHp7j09Pf+Pj//Z2YODg6S8yv8zM8PS3GZmZgkJCf+np3GWrSIiIoaluf9TU/X4+ePj40RERF1dXc3a4v9sbP8nJ67D0N/f3/+/v/+vr//f3wAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAABYAB8AAAb/QI5jSCwaj8ikcslsIjlCqHRKrVqv2Kx2e3VEueCweIx1KLzktHoNQ91uAeF5Ta9rA4KB68Y6yNFiFwtSCxMTDVIVhSRQK4aMJIYTFyMJO3ZSKB4CcRwufmaAUB84Wi8bUgQXKw8JHCQnCysbKxwPI7MNFxsXFyQ5OhWYHJo0U59/Uh0pH6IcH1MVGwm1HARSJw0Jg68nthcchhcPw1QhAyFSMAcQoHNCKVMOHRQfLQpSKzULNVDXUIZsTHlA4hYrErt6CSvHIoOUGx4guEgXCgoDQDg6GOjAocAUahW8WZNi6B+UB+MS1Hig68SjcjdcSBEAIZ2UihxkPJPxIQUD/wb1OEqx8eCBDUQmHxzEVgElhxUvxpWT0gcKDQ8wqOAsUMqjTigKoEG58ALKiAkjOSxAtaAshxHknFaSOpUGBKomDvi5+c5Big4MOBj4KzgwlH1QGqAiUDTBwgkbpgl7sOHBiwoXiD7gZgeEQw4BXIgeIO/d1NNbYAzoNIU0X2eoY1NBAcKKayg4ZeuewgKF7dKwd6NGwUIKhAHIkQOHYkGCcwUWDEtRIL35jBjRmTOYgcBCDOclLFqY0hyKBCkzDDiXoOC7hPBVYHgwxuFA8S7vFGhQAF1BBCotaMDcfoH5B1YECpQQg34KiCACBwhOMYMKBnCAQIEI7tfffiIgUP+FC7VBsUcZ+f134BQxaIBAeM5NZ6KBJ3IAAIT4SKHBDA9aoAKEFsDIAYwzShEaBFnVhxWJaPjoIwcliMBAjioYxqACM5j4438G/BchFClaIKCFDHg45YL/hQkFRB6YUCQHEHyGX5IARBCBAUuuGMOOHFiAgAYLquAcAlYqECcCFW7JwZMcaDCeBQCMp4CfEvQYJwAxnGkCFTRpgZOSVsooJwAVQoHADDByOoWhAUagwgxQBGkqohy8oQ5Na74Z45XTtQDFDBJUCmapgXZqaJBZtnqrgV6eeQMUxLlQq624ghVnBE8aZoAGDMj5ILAunqqBnCV42Gqlrk7LAIwqVBpHEwge9AZGbsKVc8ANKNj0rmnx5oukvvy+ScG/AAcs8MAEF2zwwQgnTLAZQjjh8MMQR6xEjT/yZ/HFGGes8cYcd+zxxxlDEQQAOw==' border='0'/></a>";
 				$(element).fire("swfloader:loaded-getflashplayer", {"swfloader": this} );
 				return true;
 			}
@@ -361,7 +360,7 @@ SWFLoader.prototype = {
 	addAlternateContentCallback: function(element, width, height) {
 		this.addAlternateContent(element, width, height);
 	},
-	
+
 	/**
 	 * unload
 	 *
@@ -374,7 +373,7 @@ SWFLoader.prototype = {
 	unload: function(swfname) {
 		this.processUnload.bind(this).defer(swfname);
 	},
-	
+
 	/**
 	 * processUnload
 	 *
@@ -391,7 +390,7 @@ SWFLoader.prototype = {
 			this.swfobjects[swfname] = undefined;
 		}
 	},
-	
+
 	/**
 	 * getSWFObjectByName
 	 *
@@ -440,11 +439,11 @@ SWFLoader.prototype = {
 	 **/
 	SWFCall: function() {
 		flashVars = $A(arguments);
-		
+
 		swfname = flashVars.shift();
 		methodName = flashVars.shift();
 		methodVars = flashVars;
-		
+
 		swfobject = this.getSWFObjectByName(swfname);
 		if (swfobject) {
 			callbackFunction = swfobject.getCallbackByMethod(methodName);
@@ -462,7 +461,7 @@ SWFLoader.prototype = {
 			this.SWFError("Object with name " + swfname + " doesn't exist.");
 		}
 	},
-	
+
 	/**
 	 * SWFLogStart
 	 *
@@ -479,7 +478,7 @@ SWFLoader.prototype = {
 			console.time("response time (" + debugInfo.id + ")");
 		}
 	},
-	
+
 	/**
 	 * SWFLogEnd
 	 *
@@ -496,7 +495,7 @@ SWFLoader.prototype = {
 			console.log(debugInfo);
 		}
 	},
-	
+
 	/**
 	 * SWFError
 	 *
@@ -513,9 +512,9 @@ SWFLoader.prototype = {
 			if (!log) {
 				message = "ERROR: " + message;
 			}
-			
+
 			$("consolewindow").innerHTML += message + "<br/>";
-			
+
 			return;
 		}
 		if (console) {
@@ -525,11 +524,11 @@ SWFLoader.prototype = {
 			else {
 				console.error("ERROR: " + message);
 			}
-			
+
 			return;
 		}
 	},
-	
+
 	/**
 	 * SWFDebug
 	 *
@@ -558,7 +557,7 @@ SWFLoader.prototype = {
 			throw Error(args);
 		}
 	},
-	
+
 	/**
 	 * checkDeeplink
 	 *
@@ -577,7 +576,7 @@ SWFLoader.prototype = {
 			}
 		}
 	},
-	
+
 	/**
 	 * SWFDeeplink
 	 *
@@ -594,7 +593,7 @@ SWFLoader.prototype = {
 			document.title = title;
 		}
 	},
-	
+
 	/**
 	 * broadcastDeeplink
 	 *
@@ -609,7 +608,7 @@ SWFLoader.prototype = {
 		var deeplink = document.location.hash.replace(/#/g, "");
 		if (deeplink != "" && this.broadcastedDeeplink != deeplink) {
 			this.broadcastedDeeplink = deeplink;
-			
+
 			for (var swfname in this.swfobjects) {
 				if (this.swfobjects[swfname]["object"].deeplinking) {
 					this.swfobjects[swfname]["object"].setDeeplink(deeplink);
@@ -617,7 +616,7 @@ SWFLoader.prototype = {
 			}
 		}
 	},
-	
+
 	/**
 	 * initUnload
 	 *
@@ -633,7 +632,7 @@ SWFLoader.prototype = {
 		if (!window.opera && document.all) {
 			__flash_unloadHandler = function(){};
 			__flash_savedUnloadHandler = function(){};
-			
+
 			//window.attachEvent("onunload", this.cleanupSWFObjects);
 		}
 	},
@@ -661,7 +660,7 @@ SWFLoader.prototype = {
 			}
 		}
 	}
-}
+});
 
 /**
  * SWFObject
@@ -688,8 +687,7 @@ SWFLoader.prototype = {
  * @since Thu Sep 13 2007
  * @author Niels Nijens (niels@connectholland.nl)
  **/
-var SWFObject = Class.create();
-SWFObject.prototype = {
+var SWFObject = Class.create({
 
 	/**
 	 * initialize
@@ -709,7 +707,7 @@ SWFObject.prototype = {
 	initialize: function(swfname, swffile, width, height, bgcolor, swfvars) {
 		this.deeplinking = false;
 		this.registeredCallbacks = {};
-		
+
 		this.initAttributes({"swffile" : swffile, "swfname" : swfname, "width" : width, "height" : height});
 		this.initParams({"quality" : "high", "menu" : "false", "scale" : "noscale", "AllowScriptAccess" : "always", "bgcolor" : this.getColor(bgcolor), "wmode" : this.getWMode(bgcolor)});
 		this.initVariables(swfvars);
@@ -1061,7 +1059,7 @@ SWFObject.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * registerCallback
 	 *
@@ -1076,7 +1074,7 @@ SWFObject.prototype = {
 		this.registeredCallbacks[methodName] = {};
 		this.registeredCallbacks[methodName]["callback"] = callbackFunction;
 	},
-	
+
 	/**
 	 * getCallbackByMethod
 	 *
@@ -1092,7 +1090,7 @@ SWFObject.prototype = {
 		}
 		return false;
 	},
-	
+
 	/**
 	 * getContainer
 	 *
@@ -1104,7 +1102,7 @@ SWFObject.prototype = {
 	getContainer: function() {
 		return swfloader.getDivByName(this.getAttribute("swfname") );
 	},
-	
+
 	/**
 	 * setDeeplink
 	 *
@@ -1122,6 +1120,6 @@ SWFObject.prototype = {
 			this.setDeeplink.bind(this).delay(0.05, link);
 		}
 	}
-}
+});
 
 var swfloader = new SWFLoader();
